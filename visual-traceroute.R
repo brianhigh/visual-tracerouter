@@ -91,7 +91,7 @@ trace_router <- function(x) {
         route <- unlist(str_extract_all(routeString, pattern))[-1]
     
         if (length(route) > 0) {
-            write.csv(route, routeTxtFile, row.names = FALSE)
+            write.csv(route, routeCsvFile, row.names = FALSE)
         }
     }
     return(route)
@@ -172,8 +172,10 @@ plot_maps <- function(ipinfo, bbox) {
 # Main Routine
 # ------------
 
-if (use.cache == TRUE & file.exists("route.csv") == TRUE) {
-    route <- read.csv("route.csv", stringsAsFactors=FALSE)
+routeCsvFile <- paste0(c(addr, "_route.csv"), collapse = "")
+
+if (use.cache == TRUE & file.exists(routeCsvFile) == TRUE) {
+    route <- read.csv(routeCsvFile, stringsAsFactors=FALSE)
 } else {
     # This may take a while...
     route <- trace_router(addr)

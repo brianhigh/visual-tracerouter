@@ -14,7 +14,7 @@ Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the butto
 
 For reference, [this is example output](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/data/www_cubagob_cu_route.txt) from `tracert` on a Windows system:
 
-`C:\Users\nobody>tracert www.cubagob.cu`
+`C:\Users\nobody>tracert -d www.cubagob.cu`
 
 ```
 Tracing route to vhunix.ceniai.inf.cu [169.158.128.86]

@@ -44,8 +44,8 @@ Here are the resulting plots:
 
 #### `ggmap` package plot using `qmplot` function
 
-![ggmap plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/route_ggmap.png)
+![ggmap plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/route_ggmap.png)
 
 #### `maps` package plot using `map`, `points` and `lines` functions
 
-![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/route_map.png)
+![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/route_map.png)

@@ -75,13 +75,14 @@ trace_router <- function(x) {
         route <- try(system(paste("tracert", "-d", x), intern = TRUE))
     }
     else {
-        route <- try(system(paste("traceroute", "-n", x), intern = TRUE))
+        route <- try(system(paste("traceroute", x), intern = TRUE))
     }
     
     if (length(route) > 0) {
         pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- gsub(
-            pattern = paste0(c(".* (", pattern, ") .*"), collapse=""), 
+            pattern = paste0(c(".* [\\( ](", pattern ,")[\\) ] .*"), 
+                             collapse=""), 
             x=route, replacement = "\\1")
         route <- route[grepl(
             pattern = paste0(c("^", pattern, "$"), collapse=""), 
@@ -100,64 +101,70 @@ get_ipinfo <- function (route) {
                                                 stringsAsFactors=FALSE))))
     
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
+    ipinfo$latitude <- as.numeric(ipinfo$latitude)
+    ipinfo$longitude <- as.numeric(ipinfo$longitude)
     write.csv(ipinfo, "ipinfo.csv", row.names = FALSE)
     
     return(ipinfo)
 }
 
-plot_ggmap <- function(ipinfo) {
-    # Plot using the ggmap package.
-    
+get_endpoints <- function(ipinfo) {
     # Find end points of each segment by copying lat/lon and shifting up a row.
-    ipinfo$next_latitude <- c(ipinfo[-1, "latitude"], ipinfo[1, "latitude"])
-    ipinfo$next_longitude <- c(ipinfo[-1, "longitude"], ipinfo[1, "longitude"])
-    
-    # Limit dataset to valid segments by removing last row
+    ipinfo$next_latitude <- as.vector(
+        c(ipinfo$latitude[-1], last(ipinfo$latitude)), mode="numeric")
+    ipinfo$next_longitude <- as.vector(
+        c(ipinfo$longitude[-1], last(ipinfo$longitude)), mode="numeric")
     points <- ipinfo[-nrow(ipinfo), c("latitude", "longitude", 
                                       "next_latitude", "next_longitude")] 
 
-    # Plot map
-    library(ggmap)
-    q <- qmplot(longitude, latitude, data = points, 
-           maptype = "toner-lite", color = I("red"), 
-           geom = "segment", xend=next_longitude, yend=next_latitude)
-    
-    if (save.plot == TRUE) {
-        dev.copy(png,'route_ggmap.png')
-        dev.off()
-    }
-    
-    return(q)
+    return(points)
 }
 
-plot_map <- function(ipinfo) {
-    # Plot using the maps package.
-    
+get_bbox <- function(ipinfo) {   
     # Calculate map boundaries
-    ipinfo$latitude <- as.numeric(ipinfo$latitude)
-    ipinfo$longitude <- as.numeric(ipinfo$longitude)
     maxlat <- ceiling(max(ipinfo$latitude))
     minlat <- floor(min(ipinfo$latitude))
     maxlon <- ceiling(max(ipinfo$longitude))
     minlon <- floor(min(ipinfo$longitude))
-    deltalat <- maxlat - minlat
-    deltalon <- maxlon - minlon
-    maxlat <- maxlat + deltalat/4
-    minlat <- minlat - deltalat/4
-    maxlon <- maxlon + deltalon/4
-    minlon <- minlon - deltalon/4
     
-    # Plot map
-    library(maps)
-    map("world", xlim=c(minlon,maxlon), ylim=c(minlat,maxlat), 
-        col="gray90", fill=TRUE)
-    points(x = points$longitude, y = points$latitude, col = "red")
-    lines(x = points$longitude, y = points$latitude, col = "blue")
+    # Make sides of the box one quarter larger as a border
+    deltalat <- maxlat - minlat
+    deltalon <- maxlon - minlon    
+    bbox <- data.frame(
+        maxlat = c(maxlat + deltalat/4),
+        minlat = c(minlat - deltalat/4),
+        maxlon = c(maxlon + deltalon/4),
+        minlon = c(minlon - deltalon/4))
+    return(bbox)
+}
+
+plot_ggmap <- function(points) {
+    # Plot using the ggmap package.
+    library(ggmap)
+    p <- qmplot(longitude, latitude, data = points, 
+                maptype = "toner-lite", color = I("red"), 
+                geom = "segment", xend=next_longitude, yend=next_latitude)
+    print(p)
     
     if (save.plot == TRUE) {
-        dev.copy(png,'route_map.png')
+        dev.copy(png, 'route_ggmap.png')
         dev.off()
     }
+}
+
+plot_maps <- function(ipinfo, bbox) {
+    # Plot using the maps package.
+    library(maps)
+    map("world", xlim=c(bbox$minlon,bbox$maxlon), 
+        ylim=c(bbox$minlat,bbox$maxlat), 
+        col="gray90", fill=TRUE)
+    points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
+    lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
+    
+    if (save.plot == TRUE) {
+        dev.copy(png, 'route_map.png')
+        dev.off()
+    } 
 }
 
 # ------------
@@ -181,7 +188,13 @@ if (length(route) > 0) {
     }
     
     if (length(ipinfo) > 0) {
-        if (map.pkg == "ggmap") plot_ggmap(ipinfo)
-        if (map.pkg == "maps") plot_map(ipinfo)
+        if (map.pkg == "ggmap") {
+            points <- get_endpoints(ipinfo)
+            plot_ggmap(points)
+        }
+        if (map.pkg == "maps") {
+            bbox <- get_bbox(ipinfo) 
+            plot_maps(ipinfo, bbox)
+        }
     }
 }

@@ -15,7 +15,7 @@
 addr <- "www.cubagob.cu"
 
 # TRUE will save time if you just want to plot old data (or FALSE)
-use.cache <- TRUE
+use.cache <- FALSE
 
 # TRUE will save plots to PNG files (or FALSE)
 save.plot <- TRUE
@@ -45,7 +45,7 @@ for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps")) {
 # Functions
 # ---------
 
-create_folders_and_filenames <- function(addr, datadir, imagesdir) {
+create_folders_and_filenames <- function(file_addr, datadir, imagesdir) {
     # File and folder management
     
     # Create folders if not already present
@@ -54,11 +54,16 @@ create_folders_and_filenames <- function(addr, datadir, imagesdir) {
     
     # Construct paths to files
     files <- data.frame(
-        routeTxtFile <- paste0(c(datadir, "/", addr, "_route.txt"), collapse = ""),
-        routeCsvFile = paste0(c(datadir, "/", addr, "_route.csv"), collapse = ""),
-        ipinfoCsvFile = paste0(c(datadir, "/", addr, "_ipinfo.csv"), collapse = ""),
-        mapPngFile = paste0(c(imagesdir, "/", addr, "_map.png"), collapse = ""),
-        ggmapPngFile = paste0(c(imagesdir, "/", addr, "_ggmap.png"), collapse = ""),
+        routeTxtFile <- paste0(c(datadir, "/", file_addr, "_route.txt"), 
+                               collapse = ""),
+        routeCsvFile = paste0(c(datadir, "/", file_addr, "_route.csv"), 
+                              collapse = ""),
+        ipinfoCsvFile = paste0(c(datadir, "/", file_addr, "_ipinfo.csv"), 
+                               collapse = ""),
+        mapPngFile = paste0(c(imagesdir, "/", file_addr, "_map.png"), 
+                            collapse = ""),
+        ggmapPngFile = paste0(c(imagesdir, "/", file_addr, "_ggmap.png"), 
+                              collapse = ""),
         stringsAsFactors=FALSE
     )
     
@@ -197,7 +202,8 @@ plot_maps <- function(ipinfo, bbox) {
 # Main Routine
 # ------------
 
-files <- create_folders_and_filenames(addr, datadir, imagesdir)
+file_addr <- gsub("\\.", "_", addr)
+files <- create_folders_and_filenames(file_addr, datadir, imagesdir)
 
 if (use.cache == TRUE & file.exists(files$routeCsvFile) == TRUE) {
     route <- read.csv(files$routeCsvFile, stringsAsFactors=FALSE)

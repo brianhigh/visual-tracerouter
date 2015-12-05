@@ -15,13 +15,13 @@
 addr <- "www.cubagob.cu"
 
 # TRUE will save time if you just want to plot old data (or FALSE)
-use.cache <- FALSE
+use.cache <- TRUE
 
 # TRUE will save plots to PNG files (or FALSE)
 save.plot <- TRUE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping
-map.pkg <- "maps"
+map.pkg <- "ggmap"
 
 # These folders will be used to store data (text) and images
 datadir <- "data"

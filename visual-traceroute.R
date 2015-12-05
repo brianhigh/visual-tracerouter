@@ -9,24 +9,30 @@
 # Configuration
 # -------------
 
-# Enter the remote address (a addr name or IP address)
+# Enter the remote address (a domain name or an IPv4 address)
+# Example-1: addr <- "www.cubagob.cu"
+# Example-2: addr <- 169.158.128.86
 addr <- "www.cubagob.cu"
 
-# TRUE will save time if you just want to plot old data
+# TRUE will save time if you just want to plot old data (or FALSE)
 use.cache <- TRUE
 
-# TRUE will save plots to PNG files.
+# TRUE will save plots to PNG files (or FALSE)
 save.plot <- TRUE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping
 map.pkg <- "maps"
+
+# These folders will be used to store data (text) and images
+datadir <- "data"
+imagesdir <- "images"
 
 # ------------------
 # Package Management
 # ------------------
 
 # Install packages (if necessary)
-for (pkg in c("rjson", "dplyr", "ggmap", "maps")) {
+for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -38,6 +44,26 @@ for (pkg in c("rjson", "dplyr", "ggmap", "maps")) {
 # ---------
 # Functions
 # ---------
+
+create_folders_and_filenames <- function(addr, datadir, imagesdir) {
+    # File and folder management
+    
+    # Create folders if not already present
+    dir.create(file.path(datadir), showWarnings = FALSE, recursive = TRUE)
+    dir.create(file.path(imagesdir), showWarnings = FALSE, recursive = TRUE)
+    
+    # Construct paths to files
+    files <- data.frame(
+        routeTxtFile <- paste0(c(datadir, "/", addr, "_route.txt"), collapse = ""),
+        routeCsvFile = paste0(c(datadir, "/", addr, "_route.csv"), collapse = ""),
+        ipinfoCsvFile = paste0(c(datadir, "/", addr, "_ipinfo.csv"), collapse = ""),
+        mapPngFile = paste0(c(imagesdir, "/", addr, "_map.png"), collapse = ""),
+        ggmapPngFile = paste0(c(imagesdir, "/", addr, "_ggmap.png"), collapse = ""),
+        stringsAsFactors=FALSE
+    )
+    
+    return(files)
+}
 
 # https://heuristically.wordpress.com/2013/05/20/geolocate-ip-addresses-in-r/
 # http://www.dataanalysistools.net/geocode-ip-addresses-in-r/
@@ -70,28 +96,27 @@ trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address
     route <- c()
     sysname <- Sys.info()["sysname"]
-    routeTxtFile <- paste0(c(addr, "_route.txt"), collapse = "")
     
-    if (use.cache == FALSE | file.exists(routeTxtFile) == FALSE) {
+    if (use.cache == FALSE | file.exists(files$routeTxtFile) == FALSE) {
         if (sysname == "Windows") {
             res <- try(system(
-                paste("tracert", "-d", x, ">", routeTxtFile), 
+                paste("tracert", "-d", x, ">", files$routeTxtFile), 
                 intern = TRUE))
         }
         else {
             res <- try(system(
-                paste("traceroute", "-n", x, ">", routeTxtFile), 
+                paste("traceroute", "-n", x, ">", files$routeTxtFile), 
                 intern = TRUE))
         }        
     }
     
-    if (file.exists(routeTxtFile) == TRUE) {
-        routeString <- paste(readLines(routeTxtFile), collapse=" ")
+    if (file.exists(files$routeTxtFile) == TRUE) {
+        routeString <- paste(readLines(files$routeTxtFile), collapse=" ")
         pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- unlist(str_extract_all(routeString, pattern))[-1]
     
         if (length(route) > 0) {
-            write.csv(route, routeCsvFile, row.names = FALSE)
+            write.csv(route, files$routeCsvFile, row.names = FALSE)
         }
     }
     return(route)
@@ -107,7 +132,7 @@ get_ipinfo <- function (route) {
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
     ipinfo$latitude <- as.numeric(ipinfo$latitude)
     ipinfo$longitude <- as.numeric(ipinfo$longitude)
-    write.csv(ipinfo, "ipinfo.csv", row.names = FALSE)
+    write.csv(ipinfo, files$ipinfoCsvFile, row.names = FALSE)
     
     return(ipinfo)
 }
@@ -148,7 +173,7 @@ plot_ggmap <- function(ipinfo) {
     print(p)
     
     if (save.plot == TRUE) {
-        dev.copy(png, 'route_ggmap.png')
+        dev.copy(png, files$ggmapPngFile)
         dev.off()
     }
 }
@@ -163,7 +188,7 @@ plot_maps <- function(ipinfo, bbox) {
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
     
     if (save.plot == TRUE) {
-        dev.copy(png, 'route_map.png')
+        dev.copy(png, files$mapPngFile)
         dev.off()
     } 
 }
@@ -172,10 +197,10 @@ plot_maps <- function(ipinfo, bbox) {
 # Main Routine
 # ------------
 
-routeCsvFile <- paste0(c(addr, "_route.csv"), collapse = "")
+files <- create_folders_and_filenames(addr, datadir, imagesdir)
 
-if (use.cache == TRUE & file.exists(routeCsvFile) == TRUE) {
-    route <- read.csv(routeCsvFile, stringsAsFactors=FALSE)
+if (use.cache == TRUE & file.exists(files$routeCsvFile) == TRUE) {
+    route <- read.csv(files$routeCsvFile, stringsAsFactors=FALSE)
 } else {
     # This may take a while...
     route <- trace_router(addr)
@@ -183,8 +208,8 @@ if (use.cache == TRUE & file.exists(routeCsvFile) == TRUE) {
 
 if (length(route) > 0) {
     
-    if (use.cache == TRUE & file.exists("ipinfo.csv") == TRUE) {
-        ipinfo <- read.csv("ipinfo.csv", stringsAsFactors=FALSE)
+    if (use.cache == TRUE & file.exists(files$ipinfoCsvFile) == TRUE) {
+        ipinfo <- read.csv(files$ipinfoCsvFile, stringsAsFactors=FALSE)
     } else {
         # This may take a while...
         ipinfo <- get_ipinfo(route)

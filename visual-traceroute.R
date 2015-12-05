@@ -114,10 +114,7 @@ get_endpoints <- function(ipinfo) {
         c(ipinfo$latitude[-1], last(ipinfo$latitude)), mode="numeric")
     ipinfo$next_longitude <- as.vector(
         c(ipinfo$longitude[-1], last(ipinfo$longitude)), mode="numeric")
-    points <- ipinfo[-nrow(ipinfo), c("latitude", "longitude", 
-                                      "next_latitude", "next_longitude")] 
-
-    return(points)
+    return(ipinfo)
 }
 
 get_bbox <- function(ipinfo) {   
@@ -138,10 +135,10 @@ get_bbox <- function(ipinfo) {
     return(bbox)
 }
 
-plot_ggmap <- function(points) {
+plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
     library(ggmap)
-    p <- qmplot(longitude, latitude, data = points, 
+    p <- qmplot(longitude, latitude, data = ipinfo, 
                 maptype = "toner-lite", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     print(p)
@@ -188,13 +185,7 @@ if (length(route) > 0) {
     }
     
     if (length(ipinfo) > 0) {
-        if (map.pkg == "ggmap") {
-            points <- get_endpoints(ipinfo)
-            plot_ggmap(points)
-        }
-        if (map.pkg == "maps") {
-            bbox <- get_bbox(ipinfo) 
-            plot_maps(ipinfo, bbox)
-        }
+        if (map.pkg == "ggmap") plot_ggmap(get_endpoints(ipinfo))
+        if (map.pkg == "maps") plot_maps(ipinfo, get_bbox(ipinfo))
     }
 }

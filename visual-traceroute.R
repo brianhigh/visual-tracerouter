@@ -72,25 +72,26 @@ trace_router <- function(x) {
     sysname <- Sys.info()["sysname"]
     routeTxtFile <- paste0(c(addr, "_route.txt"), collapse = "")
     
-    if (file.exists(routeTxtFile)) unlink(routeTxtFile)
-    
-    if (sysname == "Windows") {
-        res <- try(system(
-            paste("tracert", "-d", x, ">", routeTxtFile), 
-            intern = TRUE))
+    if (use.cache == FALSE | file.exists(routeTxtFile) == FALSE) {
+        if (sysname == "Windows") {
+            res <- try(system(
+                paste("tracert", "-d", x, ">", routeTxtFile), 
+                intern = TRUE))
+        }
+        else {
+            res <- try(system(
+                paste("traceroute", "-n", x, ">", routeTxtFile), 
+                intern = TRUE))
+        }        
     }
-    else {
-        res <- try(system(
-            paste("traceroute", "-n", x, ">", routeTxtFile), 
-            intern = TRUE))
-    }
     
-    if (file.exists(routeTxtFile)) {
+    if (file.exists(routeTxtFile) == TRUE) {
         routeString <- paste(readLines(routeTxtFile), collapse=" ")
+        pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- unlist(str_extract_all(routeString, pattern))[-1]
     
         if (length(route) > 0) {
-            write.csv(route, "route.csv", row.names = FALSE)
+            write.csv(route, routeTxtFile, row.names = FALSE)
         }
     }
     return(route)
@@ -171,7 +172,7 @@ plot_maps <- function(ipinfo, bbox) {
 # Main Routine
 # ------------
 
-if (use.cache == TRUE & file.exists("route.csv")) {
+if (use.cache == TRUE & file.exists("route.csv") == TRUE) {
     route <- read.csv("route.csv", stringsAsFactors=FALSE)
 } else {
     # This may take a while...
@@ -180,7 +181,7 @@ if (use.cache == TRUE & file.exists("route.csv")) {
 
 if (length(route) > 0) {
     
-    if (use.cache == TRUE & file.exists("ipinfo.csv")) {
+    if (use.cache == TRUE & file.exists("ipinfo.csv") == TRUE) {
         ipinfo <- read.csv("ipinfo.csv", stringsAsFactors=FALSE)
     } else {
         # This may take a while...

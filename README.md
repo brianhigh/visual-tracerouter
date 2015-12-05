@@ -10,6 +10,8 @@ Example data in CSV files and output in PNG files are provided.
 
 Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the button "Proxy Trace" pressed after you enter the domain as "Remote Address".
 
+### Route Example
+
 For reference, this is example output from `tracert` on a Windows system:
 
 ```
@@ -37,3 +39,13 @@ over a maximum of 30 hops:
  17     *        *        *     Request timed out.
  18     *        *     ^C
 ```
+
+Here are the resulting plots:
+
+#### `ggmap` package plot using `qmplot` function
+
+![ggmap plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/route_ggmap.png)
+
+#### `maps` package plot using `map`, `points` and `lines` functions
+
+![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/route_map.png)

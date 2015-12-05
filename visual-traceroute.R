@@ -2,15 +2,15 @@
 # title: visual-tracerouter
 # description: Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date: 4 Dec. 2015
+# date: 5 Dec. 2015
 # -------------------------------------------------------------------------
 
 # -------------
 # Configuration
 # -------------
 
-# Enter the remote address (a domain name or IP address)
-domain <- "www.cubagob.cu"
+# Enter the remote address (a addr name or IP address)
+addr <- "www.cubagob.cu"
 
 # TRUE will save time if you just want to plot old data
 use.cache <- TRUE
@@ -70,26 +70,29 @@ trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address
     route <- c()
     sysname <- Sys.info()["sysname"]
+    routeTxtFile <- paste0(c(addr, "_route.txt"), collapse = "")
+    
+    if (file.exists(routeTxtFile)) unlink(routeTxtFile)
     
     if (sysname == "Windows") {
-        route <- try(system(paste("tracert", "-d", x), intern = TRUE))
+        res <- try(system(
+            paste("tracert", "-d", x, ">", routeTxtFile), 
+            intern = TRUE))
     }
     else {
-        route <- try(system(paste("traceroute", x), intern = TRUE))
+        res <- try(system(
+            paste("traceroute", "-n", x, ">", routeTxtFile), 
+            intern = TRUE))
     }
     
-    if (length(route) > 0) {
-        pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
-        route <- gsub(
-            pattern = paste0(c(".* [\\( ](", pattern ,")[\\) ] .*"), 
-                             collapse=""), 
-            x=route, replacement = "\\1")
-        route <- route[grepl(
-            pattern = paste0(c("^", pattern, "$"), collapse=""), 
-            x=route)]
-        write.csv(route, "route.csv", row.names = FALSE)
+    if (file.exists(routeTxtFile)) {
+        routeString <- paste(readLines(routeTxtFile), collapse=" ")
+        route <- unlist(str_extract_all(routeString, pattern))[-1]
+    
+        if (length(route) > 0) {
+            write.csv(route, "route.csv", row.names = FALSE)
+        }
     }
-
     return(route)
 }
 
@@ -172,7 +175,7 @@ if (use.cache == TRUE & file.exists("route.csv")) {
     route <- read.csv("route.csv", stringsAsFactors=FALSE)
 } else {
     # This may take a while...
-    route <- trace_router(domain)
+    route <- trace_router(addr)
 }
 
 if (length(route) > 0) {

@@ -7,3 +7,5 @@ The utility used will be "traceroute" on a Windows system and "tracert" otherwis
 Mapping can be done with `ggmap` or `maps`, depending on the configuration of variables early in the R script.
 
 Example data in CSV files and output in PNG files are provided.
+
+Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the button "Proxy Trace" pressed after you enter the domain as "Remote Address".

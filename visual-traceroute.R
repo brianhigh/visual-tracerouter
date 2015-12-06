@@ -24,11 +24,15 @@
 # Example-2: addr <- 169.158.128.86
 addr <- "www.cubagob.cu"
 
-# TRUE will save time if you just want to plot old data (or FALSE)
+# TRUE will use old data if present (or FALSE will not, instead regenerating it)
 use.cache <- TRUE
 
-# TRUE will save plots to PNG files (or FALSE)
+# TRUE will save plots to PNG files (or FALSE will not)
 save.plot <- TRUE
+
+# TRUE will open a graphics device window to show the plot (or FALSE will not)
+# Note: RStudio will display the plot in the Plots tab when set to FALSE.
+show.plot <- FALSE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping
 map.pkg <- "maps"
@@ -40,36 +44,33 @@ images.dir <- "images"
 # --------------------------
 # Parse command-line options
 # --------------------------
-# Modified from: http://stackoverflow.com/questions/14167178
 
-# Read in the arguments listed at the command line
 args=(commandArgs(TRUE))
-
-# Check to see if arguments are passed.
 if(length(args) > 0) {
-    # Cycle through each element of the list and evaluate the expressions.    
     for(i in 1:length(args)) {
         eval(parse(text=args[[i]]))
-    }
-}
-
-# ------------------
-# Package Management
-# ------------------
-
-# Install packages (if necessary)
-for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander")) {
-    if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
-        install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
-            stop(paste0(c("Can't load package: ", pkg, "!"), collapse = ""))
-        }
     }
 }
 
 # ---------
 # Functions
 # ---------
+
+load_packages <- function(pkgs) {
+    # Install packages (if necessary) and load them into memory
+    for (pkg in pkgs) {
+        if (! suppressWarnings(suppressPackageStartupMessages(require(
+            pkg, character.only=TRUE, quietly=TRUE))) ) {
+            install.packages(pkg, repos="http://cran.fhcrc.org", 
+                             dependencies=TRUE)
+            if (! suppressWarnings(suppressPackageStartupMessages(require(
+                pkg, character.only=TRUE, quietly=TRUE))) ) {
+                stop(paste0(c("Can't load package: ", pkg, "!"), 
+                            collapse = ""))
+            }
+        }
+    }
+}
 
 create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
     # File and folder management
@@ -201,16 +202,20 @@ get_bbox <- function(ipinfo) {
 plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
     library(ggmap)
-    x11()
     p <- qmplot(longitude, latitude, data = ipinfo,
                 maptype = "toner-lite", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
-    print(p)
-    if (interactive() == FALSE) gglocator(1)
     
+    # Show plot in separate graphics device window
+    if (show.plot == TRUE) {
+        x11()
+        print(p)
+        if (interactive() == FALSE) gglocator(1)
+    }
+    
+    # Save the plot as a PNG image file
     if (save.plot == TRUE) {
-        dev.copy(png, files$ggmap.png.file)
-        dev.off()
+        ggsave(file=files$ggmap.png.file, plot=p)
     }
 }
 
@@ -220,28 +225,60 @@ plot_maps <- function(ipinfo, bbox) {
     
     # Plot using the maps package.
     library(maps)
-    x11()
-    map("world", xlim=c(bbox$minlon,bbox$maxlon), 
-        ylim=c(bbox$minlat,bbox$maxlat), 
-        col="gray90", fill=TRUE)
-    points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
-    lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
-    text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
-         cex=.7, adj=0, pos=1, col="gray30")
-    if (interactive() == FALSE) locator(1)
+    make_plot <- function(ipinfo, bbox) {
+        map("world", xlim=c(bbox$minlon,bbox$maxlon), 
+            ylim=c(bbox$minlat,bbox$maxlat), 
+            col="gray90", fill=TRUE)
+        points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
+        lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
+        text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
+             cex=.7, adj=0, pos=1, col="gray30")
+        if (interactive() == FALSE & show.plot == TRUE) locator(1)
+    }
     
+    # Show plot in separate graphics device window
+    if (show.plot == TRUE) {
+        x11()
+        make_plot(ipinfo, bbox)
+        if (interactive() == FALSE) locator(1)
+    }
+    
+    # Save the plot as a PNG image file
     if (save.plot == TRUE) {
-        dev.copy(png, files$map.png.file)
+        png(files$map.png.file)
+        make_plot(ipinfo, bbox)
         dev.off()
     } 
+}
+
+view_image <- function(image) {
+    # Load a PNG image from a file and view it
+    if (show.plot == TRUE) x11()
+    plot.new()
+    img <- readPNG(image)
+    grid::grid.raster(img)
+    if (interactive() == FALSE) {
+        locator(1)
+        dev.off()
+    }
+}
+
+print_route_table <- function(ipinfo){
+    # Print out a table of the route
+    ipinfo[, c("ip", "city", "region_name", "country_name")] %>% 
+        pandoc.table(style="simple")
 }
 
 # ------------
 # Main Routine
 # ------------
 
-file.addr <- gsub("\\.", "_", addr)
-files <- create_folders_and_filenames(file.addr, data.dir, images.dir)
+load_packages(c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png"))
+
+files <- create_folders_and_filenames(str_replace(addr, "\\.", "_"), 
+                                      data.dir, images.dir)
+
+cat(paste(c("Tracing route to:", addr, "...")))
 
 if (use.cache == TRUE & file.exists(files$route.csv.file) == TRUE) {
     route <- read.csv(files$route.csv.file, stringsAsFactors=FALSE)
@@ -259,12 +296,21 @@ if (length(route) > 0) {
         ipinfo <- get_ipinfo(route)
     }
     
-    if (nrow(ipinfo) > 0) {
-        if (map.pkg == "ggmap") plot_ggmap(get_endpoints(ipinfo))
-        if (map.pkg == "maps") plot_maps(ipinfo, get_bbox(ipinfo))
+    if (nrow(ipinfo) > 0) {    
+        if (map.pkg == "ggmap") {
+            if (use.cache == TRUE & file.exists(files$ggmap.png.file) == TRUE) {
+                view_image(files$ggmap.png.file)
+            }
+            else plot_ggmap(get_endpoints(ipinfo))
+        }
         
-        # Print out a table of the route
-        ipinfo[, c("ip", "city", "region_name", "country_name")] %>% 
-            pandoc.table(style="simple")
+        if (map.pkg == "maps") {
+            if (use.cache == TRUE & file.exists(files$map.png.file) == TRUE) {
+                view_image(files$map.png.file)
+            }
+            else plot_maps(ipinfo, get_bbox(ipinfo))
+        }
+        
+        print_route_table(ipinfo)
     }
 }

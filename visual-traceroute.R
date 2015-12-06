@@ -142,7 +142,7 @@ trace_router <- function(x) {
         route.string <- paste(readLines(files$route.txt.file), collapse=" ")
         pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- unlist(str_extract_all(route.string, pattern))[-1]
-    
+        
         if (length(route) > 0) {
             write.csv(route, files$route.csv.file, row.names = FALSE)
         }
@@ -155,7 +155,7 @@ get_ipinfo <- function (route) {
     library(dplyr)
     ipinfo <- rbind_all(
         lapply(route, function(x) suppressWarnings(as.data.frame(try_ip(x), 
-                                                stringsAsFactors=FALSE))))
+                                                                 stringsAsFactors=FALSE))))
     
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
     ipinfo$latitude <- as.numeric(ipinfo$latitude)
@@ -216,6 +216,7 @@ plot_maps <- function(ipinfo, bbox) {
         col="gray90", fill=TRUE)
     points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
+    locator(1)
     
     if (save.plot == TRUE) {
         dev.copy(png, files$map.png.file)
@@ -246,7 +247,7 @@ if (length(route) > 0) {
         ipinfo <- get_ipinfo(route)
     }
     
-    if (length(ipinfo) > 0) {
+    if (nrow(ipinfo) > 0) {
         if (map.pkg == "ggmap") plot_ggmap(get_endpoints(ipinfo))
         if (map.pkg == "maps") plot_maps(ipinfo, get_bbox(ipinfo))
         

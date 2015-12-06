@@ -6,10 +6,10 @@
 # -------------------------------------------------------------------------
 
 # You can also run from a command-line shell (Terminal) prompt in the form:
-#   Rscript visual-traceroute.R "arg1='value' arg2='value' arg3='...'"
+#   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
 #
 # Example: Trace a route to moosylvania.com and plot with ggmap.
-#   Rscript visual-traceroute.R "addr='moosylvania.com' map.pkg='ggmap'"
+#   Rscript visual-traceroute.R "addr='moosylvania.com'; map.pkg='ggmap'"
 #
 # Any option not listed on the command-line will use the defaults (below).
 
@@ -75,21 +75,18 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
     # File and folder management
     
     # Create folders if not already present
-    dir.create(file.path(data.dir), showWarnings = FALSE, recursive = TRUE)
-    dir.create(file.path(images.dir), showWarnings = FALSE, recursive = TRUE)
+    dir.create(file.path(data.dir, file.addr), 
+               showWarnings = FALSE, recursive = TRUE)
+    dir.create(file.path(images.dir, file.addr), 
+               showWarnings = FALSE, recursive = TRUE)
     
     # Construct paths to files
     files <- data.frame(
-        route.txt.file <- paste0(c(data.dir, "/", file.addr, "_route.txt"), 
-                               collapse = ""),
-        route.csv.file = paste0(c(data.dir, "/", file.addr, "_route.csv"), 
-                              collapse = ""),
-        ipinfo.csv.file = paste0(c(data.dir, "/", file.addr, "_ipinfo.csv"), 
-                               collapse = ""),
-        map.png.file = paste0(c(images.dir, "/", file.addr, "_map.png"), 
-                            collapse = ""),
-        ggmap.png.file = paste0(c(images.dir, "/", file.addr, "_ggmap.png"), 
-                              collapse = ""),
+        route.txt.file <- file.path(data.dir, file.addr, "route.txt"),
+        route.csv.file = file.path(data.dir, file.addr, "route.csv"),
+        ipinfo.csv.file = file.path(data.dir, file.addr, "ipinfo.csv"),
+        map.png.file = file.path(images.dir, file.addr, "map.png"),
+        ggmap.png.file = paste0(images.dir, file.addr, "ggmap.png"),
         stringsAsFactors=FALSE
     )
     
@@ -131,7 +128,7 @@ trace_router <- function(x) {
     if (use.cache == FALSE | file.exists(files$route.txt.file) == FALSE) {
         if (sysname == "Windows") {
             res <- try(system(
-                paste("tracert", "-d", x, ">", files$route.txt.file), 
+                paste('cmd /c "tracert', '-d', x, '>', files$route.txt.file, '"'), 
                 intern = TRUE))
         }
         else {

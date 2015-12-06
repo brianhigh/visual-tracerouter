@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------------
-# title: visual-tracerouter
-# description: Plot a map of the route of internet traffic to a remote host
+# title:  visual-tracerouter
+# descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date: 5 Dec. 2015
+# date:   6 Dec. 2015
 # -------------------------------------------------------------------------
 
 # You can also run from a command-line shell (Terminal) prompt in the form:
@@ -127,13 +127,15 @@ trace_router <- function(x) {
     
     if (use.cache == FALSE | file.exists(files$route.txt.file) == FALSE) {
         if (sysname == "Windows") {
-            res <- try(system(
-                paste('cmd /c "tracert', '-d', x, '>', files$route.txt.file, '"'), 
+            res <- try(
+                system(paste(
+                    'cmd /c "tracert', '-d', x, '>', files$route.txt.file, '"'), 
                 intern = TRUE))
         }
         else {
-            res <- try(system(
-                paste("traceroute", "-n", x, ">", files$route.txt.file), 
+            res <- try(
+                system(paste(
+                    "traceroute", "-n", x, ">", files$route.txt.file), 
                 intern = TRUE))
         }        
     }
@@ -154,8 +156,8 @@ get_ipinfo <- function (route) {
     # Get geolocation info for all IP addresses in route
     library(dplyr)
     ipinfo <- rbind_all(
-        lapply(route, function(x) suppressWarnings(as.data.frame(try_ip(x), 
-                                                                 stringsAsFactors=FALSE))))
+        lapply(route, function(x) suppressWarnings(
+            as.data.frame(try_ip(x), stringsAsFactors=FALSE))))
     
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
     ipinfo$latitude <- as.numeric(ipinfo$latitude)

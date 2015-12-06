@@ -183,23 +183,28 @@ get_bbox <- function(ipinfo) {
     
     # Make sides of the box one quarter larger as a border
     deltalat <- maxlat - minlat
-    deltalon <- maxlon - minlon    
+    deltalon <- maxlon - minlon
+    
+    # To keep the box from being too skinny, use greatest delta
+    delta <- ifelse(abs(deltalon) > abs(deltalat), deltalon, deltalat)
+    
     bbox <- data.frame(
-        maxlat = c(maxlat + deltalat/4),
-        minlat = c(minlat - deltalat/4),
-        maxlon = c(maxlon + deltalon/4),
-        minlon = c(minlon - deltalon/4))
+        maxlat = c(maxlat + delta/4),
+        minlat = c(minlat - delta/4),
+        maxlon = c(maxlon + delta/4),
+        minlon = c(minlon - delta/4))
     return(bbox)
 }
 
 plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
-    x11()
     library(ggmap)
-    p <- qmplot(longitude, latitude, data = ipinfo, 
+    x11()
+    p <- qmplot(longitude, latitude, data = ipinfo,
                 maptype = "toner-lite", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     print(p)
+    if (interactive() == FALSE) gglocator(1)
     
     if (save.plot == TRUE) {
         dev.copy(png, files$ggmap.png.file)
@@ -208,15 +213,20 @@ plot_ggmap <- function(ipinfo) {
 }
 
 plot_maps <- function(ipinfo, bbox) {
+    # Get unique locations to minimize the overwriting of labels
+    ipinfo <- unique(ipinfo[,c(3, 5, 6, 8, 9, 10)])
+    
     # Plot using the maps package.
-    x11()
     library(maps)
+    x11()
     map("world", xlim=c(bbox$minlon,bbox$maxlon), 
         ylim=c(bbox$minlat,bbox$maxlat), 
         col="gray90", fill=TRUE)
     points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
-    locator(1)
+    text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
+         cex=.7, adj=0, pos=1, col="gray30")
+    if (interactive() == FALSE) locator(1)
     
     if (save.plot == TRUE) {
         dev.copy(png, files$map.png.file)

@@ -200,6 +200,8 @@ plot_ggmap <- function(ipinfo) {
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     print(p)
     
+    # Bug: Does not save properly when the R script is run from Rscript.
+    # However, your plot will be saved in Rplots.pdf within the current folder.
     if (save.plot == TRUE) {
         dev.copy(png, files$ggmap.png.file)
         dev.off()
@@ -215,6 +217,8 @@ plot_maps <- function(ipinfo, bbox) {
     points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
     
+    # Bug: Does not save properly when the R script is run from Rscript.
+    # However, your plot will be saved in Rplots.pdf within the current folder.
     if (save.plot == TRUE) {
         dev.copy(png, files$map.png.file)
         dev.off()

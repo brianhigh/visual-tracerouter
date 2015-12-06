@@ -86,7 +86,7 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
         route.csv.file = file.path(data.dir, file.addr, "route.csv"),
         ipinfo.csv.file = file.path(data.dir, file.addr, "ipinfo.csv"),
         map.png.file = file.path(images.dir, file.addr, "map.png"),
-        ggmap.png.file = paste0(images.dir, file.addr, "ggmap.png"),
+        ggmap.png.file = file.path(images.dir, file.addr, "ggmap.png"),
         stringsAsFactors=FALSE
     )
     

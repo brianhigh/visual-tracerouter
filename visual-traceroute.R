@@ -5,9 +5,19 @@
 # date: 5 Dec. 2015
 # -------------------------------------------------------------------------
 
+# You can also run from a command-line shell (Terminal) prompt in the form:
+#   Rscript visual-traceroute.R "arg1='value' arg2='value' arg3='...'"
+#
+# Example: Trace a route to moosylvania.com and plot with ggmap.
+#   Rscript visual-traceroute.R "addr='moosylvania.com' map.pkg='ggmap'"
+#
+# Any option not listed on the command-line will use the defaults (below).
+
 # -------------
 # Configuration
 # -------------
+
+# Configure default parameters here, or supply them as command-line arguments.
 
 # Enter the remote address (a domain name or an IPv4 address)
 # Example-1: addr <- "www.cubagob.cu"
@@ -21,18 +31,34 @@ use.cache <- TRUE
 save.plot <- TRUE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping
-map.pkg <- "ggmap"
+map.pkg <- "maps"
 
 # These folders will be used to store data (text) and images
-datadir <- "data"
-imagesdir <- "images"
+data.dir <- "data"
+images.dir <- "images"
+
+# --------------------------
+# Parse command-line options
+# --------------------------
+# Modified from: http://stackoverflow.com/questions/14167178
+
+# Read in the arguments listed at the command line
+args=(commandArgs(TRUE))
+
+# Check to see if arguments are passed.
+if(length(args) > 0) {
+    # Cycle through each element of the list and evaluate the expressions.    
+    for(i in 1:length(args)) {
+        eval(parse(text=args[[i]]))
+    }
+}
 
 # ------------------
 # Package Management
 # ------------------
 
 # Install packages (if necessary)
-for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps")) {
+for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -45,24 +71,24 @@ for (pkg in c("stringr", "rjson", "dplyr", "ggmap", "maps")) {
 # Functions
 # ---------
 
-create_folders_and_filenames <- function(file_addr, datadir, imagesdir) {
+create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
     # File and folder management
     
     # Create folders if not already present
-    dir.create(file.path(datadir), showWarnings = FALSE, recursive = TRUE)
-    dir.create(file.path(imagesdir), showWarnings = FALSE, recursive = TRUE)
+    dir.create(file.path(data.dir), showWarnings = FALSE, recursive = TRUE)
+    dir.create(file.path(images.dir), showWarnings = FALSE, recursive = TRUE)
     
     # Construct paths to files
     files <- data.frame(
-        routeTxtFile <- paste0(c(datadir, "/", file_addr, "_route.txt"), 
+        route.txt.file <- paste0(c(data.dir, "/", file.addr, "_route.txt"), 
                                collapse = ""),
-        routeCsvFile = paste0(c(datadir, "/", file_addr, "_route.csv"), 
+        route.csv.file = paste0(c(data.dir, "/", file.addr, "_route.csv"), 
                               collapse = ""),
-        ipinfoCsvFile = paste0(c(datadir, "/", file_addr, "_ipinfo.csv"), 
+        ipinfo.csv.file = paste0(c(data.dir, "/", file.addr, "_ipinfo.csv"), 
                                collapse = ""),
-        mapPngFile = paste0(c(imagesdir, "/", file_addr, "_map.png"), 
+        map.png.file = paste0(c(images.dir, "/", file.addr, "_map.png"), 
                             collapse = ""),
-        ggmapPngFile = paste0(c(imagesdir, "/", file_addr, "_ggmap.png"), 
+        ggmap.png.file = paste0(c(images.dir, "/", file.addr, "_ggmap.png"), 
                               collapse = ""),
         stringsAsFactors=FALSE
     )
@@ -95,33 +121,33 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
 }  
 
 # Error handling freegeoip function supplement
-try.ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
+try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address
     route <- c()
     sysname <- Sys.info()["sysname"]
     
-    if (use.cache == FALSE | file.exists(files$routeTxtFile) == FALSE) {
+    if (use.cache == FALSE | file.exists(files$route.txt.file) == FALSE) {
         if (sysname == "Windows") {
             res <- try(system(
-                paste("tracert", "-d", x, ">", files$routeTxtFile), 
+                paste("tracert", "-d", x, ">", files$route.txt.file), 
                 intern = TRUE))
         }
         else {
             res <- try(system(
-                paste("traceroute", "-n", x, ">", files$routeTxtFile), 
+                paste("traceroute", "-n", x, ">", files$route.txt.file), 
                 intern = TRUE))
         }        
     }
     
-    if (file.exists(files$routeTxtFile) == TRUE) {
-        routeString <- paste(readLines(files$routeTxtFile), collapse=" ")
+    if (file.exists(files$route.txt.file) == TRUE) {
+        route.string <- paste(readLines(files$route.txt.file), collapse=" ")
         pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
-        route <- unlist(str_extract_all(routeString, pattern))[-1]
+        route <- unlist(str_extract_all(route.string, pattern))[-1]
     
         if (length(route) > 0) {
-            write.csv(route, files$routeCsvFile, row.names = FALSE)
+            write.csv(route, files$route.csv.file, row.names = FALSE)
         }
     }
     return(route)
@@ -131,13 +157,13 @@ get_ipinfo <- function (route) {
     # Get geolocation info for all IP addresses in route
     library(dplyr)
     ipinfo <- rbind_all(
-        lapply(route, function(x) suppressWarnings(as.data.frame(try.ip(x), 
+        lapply(route, function(x) suppressWarnings(as.data.frame(try_ip(x), 
                                                 stringsAsFactors=FALSE))))
     
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
     ipinfo$latitude <- as.numeric(ipinfo$latitude)
     ipinfo$longitude <- as.numeric(ipinfo$longitude)
-    write.csv(ipinfo, files$ipinfoCsvFile, row.names = FALSE)
+    write.csv(ipinfo, files$ipinfo.csv.file, row.names = FALSE)
     
     return(ipinfo)
 }
@@ -178,7 +204,7 @@ plot_ggmap <- function(ipinfo) {
     print(p)
     
     if (save.plot == TRUE) {
-        dev.copy(png, files$ggmapPngFile)
+        dev.copy(png, files$ggmap.png.file)
         dev.off()
     }
 }
@@ -193,7 +219,7 @@ plot_maps <- function(ipinfo, bbox) {
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
     
     if (save.plot == TRUE) {
-        dev.copy(png, files$mapPngFile)
+        dev.copy(png, files$map.png.file)
         dev.off()
     } 
 }
@@ -202,11 +228,11 @@ plot_maps <- function(ipinfo, bbox) {
 # Main Routine
 # ------------
 
-file_addr <- gsub("\\.", "_", addr)
-files <- create_folders_and_filenames(file_addr, datadir, imagesdir)
+file.addr <- gsub("\\.", "_", addr)
+files <- create_folders_and_filenames(file.addr, data.dir, images.dir)
 
-if (use.cache == TRUE & file.exists(files$routeCsvFile) == TRUE) {
-    route <- read.csv(files$routeCsvFile, stringsAsFactors=FALSE)
+if (use.cache == TRUE & file.exists(files$route.csv.file) == TRUE) {
+    route <- read.csv(files$route.csv.file, stringsAsFactors=FALSE)
 } else {
     # This may take a while...
     route <- trace_router(addr)
@@ -214,8 +240,8 @@ if (use.cache == TRUE & file.exists(files$routeCsvFile) == TRUE) {
 
 if (length(route) > 0) {
     
-    if (use.cache == TRUE & file.exists(files$ipinfoCsvFile) == TRUE) {
-        ipinfo <- read.csv(files$ipinfoCsvFile, stringsAsFactors=FALSE)
+    if (use.cache == TRUE & file.exists(files$ipinfo.csv.file) == TRUE) {
+        ipinfo <- read.csv(files$ipinfo.csv.file, stringsAsFactors=FALSE)
     } else {
         # This may take a while...
         ipinfo <- get_ipinfo(route)
@@ -224,5 +250,9 @@ if (length(route) > 0) {
     if (length(ipinfo) > 0) {
         if (map.pkg == "ggmap") plot_ggmap(get_endpoints(ipinfo))
         if (map.pkg == "maps") plot_maps(ipinfo, get_bbox(ipinfo))
+        
+        # Print out a table of the route
+        ipinfo[, c("ip", "city", "region_name", "country_name")] %>% 
+            pandoc.table(style="simple")
     }
 }

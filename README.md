@@ -12,7 +12,7 @@ Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the butto
 
 ### Route Example
 
-For reference, [this is example output](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/data/www_cubagob_cu_route.txt) from `tracert` on a Windows system:
+For reference, [this is example output](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/data/www_cubagob_cu/route.txt) from `tracert` on a Windows system:
 
 `C:\Users\nobody>tracert -d www.cubagob.cu`
 
@@ -58,8 +58,8 @@ Here are the resulting plots:
 
 #### `ggmap` package plot using `qmplot` function
 
-![ggmap plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/www_cubagob_cu_ggmap.png)
+![ggmap plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/www_cubagob_cu/ggmap.png)
 
 #### `maps` package plot using `map`, `points` and `lines` functions
 
-![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/www_cubagob_cu_map.png)
+![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/www_cubagob_cu/map.png)

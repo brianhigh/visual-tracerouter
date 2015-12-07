@@ -2,7 +2,7 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   6 Dec. 2015
+# date:   7 Dec. 2015
 # -------------------------------------------------------------------------
 
 # You can also run from a command-line shell (Terminal) prompt in the form:
@@ -32,7 +32,7 @@ save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
 # Note: If FALSE, RStudio shows the plot in the Plots tab if it is selected.
-show.map <- FALSE
+show.map <- TRUE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping.
 map.pkg <- "maps"
@@ -125,16 +125,20 @@ try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address.
+    
+    pattern <= ""
     route <- c()
     
     if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {
         if (Sys.info()["sysname"] == "Windows") {
+            pattern <- "(?:<?[0-9]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
             res <- try(
                 system(paste(
                     'cmd /c "tracert', '-d', x, '>', files$route.txt, '"'), 
                 intern = TRUE))
         }
         else {
+            pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9]+ ms)*"
             res <- try(
                 system(paste(
                     "traceroute", "-n", x, ">", files$route.txt), 
@@ -144,10 +148,14 @@ trace_router <- function(x) {
     
     if (file.exists(files$route.txt) == TRUE) {
         route.string <- paste(readLines(files$route.txt), collapse=" ")
-        pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- unlist(str_extract_all(route.string, pattern))[-1]
+        rtt <- strapply(route, "([0-9]+) ms", as.numeric)
+        addrs <- strapply(route, "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}")
+        route <- data.frame(unlist(addrs), sapply(rtt, mean), 
+                            stringsAsFactors=FALSE)
+        names(route) <- c("addr", "mean_rtt")
         
-        if (length(route) > 0) {
+        if (nrow(route) > 0) {
             write.csv(route, files$route.csv, row.names = FALSE)
         }
     }
@@ -159,9 +167,10 @@ get_ipinfo <- function (route) {
   
     library(dplyr)
     ipinfo <- rbind_all(
-        lapply(route, function(x) suppressWarnings(
+        lapply(route$addr, function(x) suppressWarnings(
             as.data.frame(try_ip(x), stringsAsFactors=FALSE))))
     
+    ipinfo$mean_rtt <- route$mean_rtt
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
     ipinfo$latitude <- as.numeric(ipinfo$latitude)
     ipinfo$longitude <- as.numeric(ipinfo$longitude)
@@ -273,7 +282,7 @@ view_image <- function(image) {
 
 print_route_table <- function(ipinfo) {
     # Print out a table of the route.
-    ipinfo[, c("ip", "city", "region_name", "country_name")] %>% 
+    ipinfo[, c("ip", "mean_rtt", "city", "region_name", "country_name")] %>% 
         pandoc.table(style="simple")
 }
 
@@ -295,7 +304,7 @@ if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
     route <- trace_router(addr)
 }
 
-if (length(route) > 0) {
+if (nrow(route) > 0) {
     
     if (use.cache == TRUE & file.exists(files$ipinfo.csv) == TRUE) {
         ipinfo <- read.csv(files$ipinfo.csv, stringsAsFactors=FALSE)

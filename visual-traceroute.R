@@ -9,7 +9,7 @@
 #   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
 #
 # Example: Trace a route to www.gov.za and show the plot in a new window.
-#   Rscript visual-traceroute.R "addr='www.gov.za'; show.plot='TRUE'"
+#   Rscript visual-traceroute.R "addr='www.gov.za'; show.map='TRUE'"
 #
 # Any option not listed on the command-line will use the defaults (below).
 
@@ -19,25 +19,25 @@
 
 # Configure default parameters here, or supply them as command-line arguments.
 
-# Enter the remote address (a domain name or an IPv4 address)
+# Enter the remote address (a domain name or an IPv4 address).
 # Example-1: addr <- "www.cubagob.cu"
 # Example-2: addr <- 169.158.128.86
 addr <- "www.cubagob.cu"
 
-# TRUE will use old data if present (or FALSE will not, instead regenerating it)
+# TRUE will use old data if present (or FALSE will not, regenerating it).
 use.cache <- TRUE
 
-# TRUE will save plots to PNG files (or FALSE will not)
+# TRUE will save plots to PNG files (or FALSE will not).
 save.plot <- TRUE
 
-# TRUE will open a graphics device window to show the plot (or FALSE will not)
-# Note: If FALSE, RStudio shows the plot in the Plots tab, except on Windows.
-show.plot <- TRUE
+# TRUE will open a separate window to show the map (or FALSE will not).
+# Note: If FALSE, RStudio shows the plot in the Plots tab.
+show.map <- FALSE
 
-# Choose "maps" or "ggmap" to specify the package to use for mapping
+# Choose "maps" or "ggmap" to specify the package to use for mapping.
 map.pkg <- "maps"
 
-# These folders will be used to store data (text) and images
+# These folders will be used to store data (text) and images.
 data.dir <- "data"
 images.dir <- "images"
 
@@ -58,6 +58,7 @@ if(length(args) > 0) {
 
 load_packages <- function(pkgs) {
     # Install packages (if necessary) and load them into memory.
+    
     for (pkg in pkgs) {
         if (! suppressWarnings(suppressPackageStartupMessages(require(
             pkg, character.only=TRUE, quietly=TRUE))) ) {
@@ -96,11 +97,12 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
 
 # https://heuristically.wordpress.com/2013/05/20/geolocate-ip-addresses-in-r/
 # http://www.dataanalysistools.net/geocode-ip-addresses-in-r/
-freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe'))
-{
+freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
+    # Look up information about an IP address using an online service.
+  
     library(rjson)
     if (1 == length(ip)) {
-        # a single IP address
+        # A single IP address
         require(rjson)
         url <- paste(c("http://freegeoip.net/json/", ip), collapse='')
         ret <- fromJSON(readLines(url, warn=FALSE))
@@ -154,6 +156,7 @@ trace_router <- function(x) {
 
 get_ipinfo <- function (route) {
     # Get geolocation info for all IP addresses in route.
+  
     library(dplyr)
     ipinfo <- rbind_all(
         lapply(route, function(x) suppressWarnings(
@@ -170,6 +173,7 @@ get_ipinfo <- function (route) {
 
 get_endpoints <- function(ipinfo) {
     # Find end points of each segment by copying lat/lon and shifting up a row.
+    
     ipinfo$next_latitude <- as.vector(
         c(ipinfo$latitude[-1], last(ipinfo$latitude)), mode="numeric")
     ipinfo$next_longitude <- as.vector(
@@ -179,6 +183,7 @@ get_endpoints <- function(ipinfo) {
 
 get_bbox <- function(ipinfo) {   
     # Calculate map boundaries.
+  
     maxlat <- ceiling(max(ipinfo$latitude))
     minlat <- floor(min(ipinfo$latitude))
     maxlon <- ceiling(max(ipinfo$longitude))
@@ -201,13 +206,14 @@ get_bbox <- function(ipinfo) {
 
 plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
+  
     library(ggmap)
     p <- qmplot(longitude, latitude, data = ipinfo,
                 maptype = "toner-lite", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     
     # Show plot in separate graphics device window.
-    if (show.plot == TRUE) {
+    if (show.map == TRUE) {
         x11()
         print(p)
         if (interactive() == FALSE) gglocator(1)
@@ -233,11 +239,11 @@ plot_maps <- function(ipinfo, bbox) {
         lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
         text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
              cex=.7, adj=0, pos=1, col="gray30")
-        if (interactive() == FALSE & show.plot == TRUE) locator(1)
+        if (interactive() == FALSE & show.map == TRUE) locator(1)
     }
     
     # Show plot in separate graphics device window.
-    if (show.plot == TRUE) {
+    if (show.map == TRUE) {
         x11()
         make_plot(ipinfo, bbox)
         if (interactive() == FALSE) locator(1)
@@ -253,11 +259,12 @@ plot_maps <- function(ipinfo, bbox) {
 
 view_image <- function(image) {
     # Load a PNG image from a file and view it.
-    # Does not work on Windows. Just shows empty window.
-    if (show.plot == TRUE) x11()
+  
+    if (show.map == TRUE) x11()
     plot.new()
     img <- readPNG(image)
     grid::grid.raster(img)
+    
     if (interactive() == FALSE) {
         locator(1)
         dev.off()
@@ -299,16 +306,14 @@ if (length(route) > 0) {
     
     if (nrow(ipinfo) > 0) {    
         if (map.pkg == "ggmap") {
-            if (Sys.info()["sysname"] != "Windows" & use.cache == TRUE & 
-                    file.exists(files$ggmap.png) == TRUE) {
+            if (use.cache == TRUE & file.exists(files$ggmap.png) == TRUE) {
                 view_image(files$ggmap.png)
             }
             else plot_ggmap(get_endpoints(ipinfo))
         }
         
         if (map.pkg == "maps") {
-            if (Sys.info()["sysname"] != "Windows" & use.cache == TRUE & 
-                    file.exists(files$map.png) == TRUE) {
+            if (use.cache == TRUE & file.exists(files$map.png) == TRUE) {
                 view_image(files$map.png)
             }
             else plot_maps(ipinfo, get_bbox(ipinfo))

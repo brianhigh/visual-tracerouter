@@ -31,7 +31,7 @@ use.cache <- TRUE
 save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
-# Note: If FALSE, RStudio shows the plot in the Plots tab.
+# Note: If FALSE, RStudio shows the plot in the Plots tab if it is selected.
 show.map <- FALSE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping.
@@ -208,8 +208,8 @@ plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
   
     library(ggmap)
-    p <- qmplot(longitude, latitude, data = ipinfo,
-                maptype = "toner-lite", color = I("red"), 
+    p <- qmplot(longitude, latitude, data = ipinfo, source="stamen", 
+                maptype = "toner-lite", mapcolor="bw", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     
     # Show plot in separate graphics device window.

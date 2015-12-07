@@ -290,7 +290,9 @@ print_route_table <- function(ipinfo) {
 # Main Routine
 # ------------
 
-load_packages(c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png"))
+pkgs <- c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png", 
+          "gsubfn")
+load_packages(pkgs)
 
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 
                                       data.dir, images.dir)

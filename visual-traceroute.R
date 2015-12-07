@@ -84,9 +84,9 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
     
     # Construct paths to files.
     files <- data.frame(
-        route.txt.file <- file.path(data.dir, file.addr, "route.txt"),
-        route.csv.file = file.path(data.dir, file.addr, "route.csv"),
-        ipinfo.csv.file = file.path(data.dir, file.addr, "ipinfo.csv"),
+        route.txt <- file.path(data.dir, file.addr, "route.txt"),
+        route.csv = file.path(data.dir, file.addr, "route.csv"),
+        ipinfo.csv = file.path(data.dir, file.addr, "ipinfo.csv"),
         map.png = file.path(images.dir, file.addr, "map.png"),
         ggmap.png = file.path(images.dir, file.addr, "ggmap.png"),
         stringsAsFactors=FALSE
@@ -127,28 +127,28 @@ trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address.
     route <- c()
     
-    if (use.cache == FALSE | file.exists(files$route.txt.file) == FALSE) {
+    if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {
         if (Sys.info()["sysname"] == "Windows") {
             res <- try(
                 system(paste(
-                    'cmd /c "tracert', '-d', x, '>', files$route.txt.file, '"'), 
+                    'cmd /c "tracert', '-d', x, '>', files$route.txt, '"'), 
                 intern = TRUE))
         }
         else {
             res <- try(
                 system(paste(
-                    "traceroute", "-n", x, ">", files$route.txt.file), 
+                    "traceroute", "-n", x, ">", files$route.txt), 
                 intern = TRUE))
         }        
     }
     
-    if (file.exists(files$route.txt.file) == TRUE) {
-        route.string <- paste(readLines(files$route.txt.file), collapse=" ")
+    if (file.exists(files$route.txt) == TRUE) {
+        route.string <- paste(readLines(files$route.txt), collapse=" ")
         pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
         route <- unlist(str_extract_all(route.string, pattern))[-1]
         
         if (length(route) > 0) {
-            write.csv(route, files$route.csv.file, row.names = FALSE)
+            write.csv(route, files$route.csv, row.names = FALSE)
         }
     }
     return(route)
@@ -166,7 +166,7 @@ get_ipinfo <- function (route) {
     ipinfo$latitude <- as.numeric(ipinfo$latitude)
     ipinfo$longitude <- as.numeric(ipinfo$longitude)
     rownames(ipinfo) <- NULL
-    write.csv(ipinfo, files$ipinfo.csv.file, row.names = FALSE)
+    write.csv(ipinfo, files$ipinfo.csv, row.names = FALSE)
     
     return(ipinfo)
 }
@@ -288,8 +288,8 @@ files <- create_folders_and_filenames(gsub("\\.", "_", addr),
 
 cat(paste(c("Tracing route to:", addr, "...", "\n")))
 
-if (use.cache == TRUE & file.exists(files$route.csv.file) == TRUE) {
-    route <- read.csv(files$route.csv.file, stringsAsFactors=FALSE)
+if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
+    route <- read.csv(files$route.csv, stringsAsFactors=FALSE)
 } else {
     cat(paste(c("This may take a while ..."), "\n"))
     route <- trace_router(addr)
@@ -297,8 +297,8 @@ if (use.cache == TRUE & file.exists(files$route.csv.file) == TRUE) {
 
 if (length(route) > 0) {
     
-    if (use.cache == TRUE & file.exists(files$ipinfo.csv.file) == TRUE) {
-        ipinfo <- read.csv(files$ipinfo.csv.file, stringsAsFactors=FALSE)
+    if (use.cache == TRUE & file.exists(files$ipinfo.csv) == TRUE) {
+        ipinfo <- read.csv(files$ipinfo.csv, stringsAsFactors=FALSE)
     } else {
         cat(paste(c("Geocoding addresses ... This may take a while ..."), "\n"))
         ipinfo <- get_ipinfo(route)

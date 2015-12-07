@@ -9,7 +9,7 @@ See the LICENSE file.
 
 ### Traceroute
 
-The traceroute utility used will be "traceroute" on a Windows system and "tracert" otherwise (Mac, Linux, Unix, etc.).
+The traceroute utility used will be "tracert" on a Windows system and "traceroute" otherwise (Mac, Linux, Unix, etc.).
 
 ### Mapping
 

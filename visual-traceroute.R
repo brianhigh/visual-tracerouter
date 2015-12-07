@@ -126,7 +126,7 @@ try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address.
     
-    pattern <= ""
+    pattern <- ""
     route <- c()
     
     if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {

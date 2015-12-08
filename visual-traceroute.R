@@ -175,7 +175,7 @@ trace_router <- function(x) {
     if (file.exists(files$route.txt) == TRUE) {
         route.string <- paste(readLines(files$route.txt), collapse=" ")
         route <- unlist(str_extract_all(route.string, pattern))[-1]
-        rtt <- strapply(route, "([0-9]+) ms", as.numeric)
+        rtt <- strapply(route, "([0-9.]+) ms", as.numeric)
         addrs <- strapply(route, "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}")
         route <- data.frame(unlist(addrs), sapply(rtt, mean), 
                             stringsAsFactors=FALSE)

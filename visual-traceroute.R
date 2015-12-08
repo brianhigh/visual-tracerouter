@@ -255,6 +255,7 @@ make_plot <- function(ipinfo, bbox) {
 
 make_leaflet <- function(ipinfo) {
     # Plot using the maps and leaflet packages.
+    # Only shows the map in "Viewer" if run manually from RStudio console!
 
     world <- map("world", fill = TRUE, plot = FALSE) 
     leaflet(data=world) %>% 

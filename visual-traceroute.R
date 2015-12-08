@@ -134,14 +134,14 @@ trace_router <- function(x) {
             pattern <- "(?:<?[0-9.]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
             res <- try(
                 system(paste(
-                    'cmd /c "tracert -d -h 30', x, '>', files$route.txt, '"'), 
+                    'cmd /c "tracert', '-d', x, '>', files$route.txt, '"'), 
                 intern = TRUE))
         }
         else {
             pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
             res <- try(
                 system(paste(
-                    "traceroute -n -q 30", x, ">", files$route.txt), 
+                    "traceroute", "-n", x, ">", files$route.txt), 
                 intern = TRUE))
         }        
     }

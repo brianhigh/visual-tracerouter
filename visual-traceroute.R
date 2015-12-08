@@ -3,10 +3,27 @@
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
 # date:   8 Dec. 2015
-# 
-# Copyright (c) 2015 Brian High (https://github.com/brianhigh). MIT LICENSE.
 # --------------------------------------------------------------------------
-
+#
+# Copyright (C) 2015 Brian High (https://github.com/brianhigh)
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# --------------------------------------------------------------------------
+#
+# NOTES:
+#
 # You can also run from a command-line shell (Terminal) prompt in the form:
 #   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
 #
@@ -16,6 +33,8 @@
 # Any option not listed on the command-line will use the defaults (below).
 # Aside from specifying the "addr" to route, the other defaults were chosen 
 # to maximize speed (e.g. use of a cache and the "maps" package over "ggmap").
+#
+# --------------------------------------------------------------------------
 
 # -------------
 # Configuration

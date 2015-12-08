@@ -4,8 +4,9 @@ This is a simple demo of running a shell utility from within R and using the out
 
 ### License
 
-Unless otherwise noted, everything here is © Brian High and offered under the 
-MIT license. See the LICENSE file.
+Unless otherwise noted, everything here is Copyright (c) Brian High (2015) and 
+licensed under the [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt). See the 
+LICENSE file.
 
 ### Traceroute
 

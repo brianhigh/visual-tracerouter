@@ -2,7 +2,7 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   7 Dec. 2015
+# date:   8 Dec. 2015
 # 
 # Copyright (c) 2015 Brian High (https://github.com/brianhigh). MIT LICENSE.
 # --------------------------------------------------------------------------
@@ -41,6 +41,9 @@ new.win <- FALSE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping.
 map.pkg <- "maps"
+
+# TRUE will open a "leaflet" map in RStudio (or FALSE will not).
+map.leaflet <- FALSE # CURRENTLY BROKEN - WILL NOT DISPLAY WHEN "SOURCED"!
 
 # These folders will be used to store data (text) and images.
 data.dir <- "data"
@@ -141,8 +144,7 @@ trace_router <- function(x) {
                 system(paste(
                     'cmd /c "tracert -d -h 30', x, '>', files$route.txt, '"'), 
                 intern = TRUE))
-        }
-        else {
+        } else {
             pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
             res <- try(
                 system(paste(
@@ -238,28 +240,42 @@ plot_ggmap <- function(ipinfo) {
     }
 }
 
+# Plot using the maps package and base plotting.
+make_plot <- function(ipinfo, bbox) {
+    map("world", xlim=c(bbox$minlon,bbox$maxlon), 
+        ylim=c(bbox$minlat,bbox$maxlat), 
+        col="gray90", fill=TRUE)
+    points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
+    lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
+    text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
+        cex=.7, adj=0, pos=1, col="gray30")
+    if (interactive() == FALSE & new.win == TRUE) locator(1)
+}
+
+# Plot using the maps and leaflet packages
+# http://blog.rstudio.org/2015/06/24/leaflet-interactive-web-maps-with-r/
+make_leaflet <- function(ipinfo) {
+    world <- map("world", fill = TRUE, plot = FALSE) 
+    leaflet(data=world) %>% 
+        addTiles() %>% 
+        addPolylines(ipinfo$longitude, ipinfo$latitude) %>%
+        addCircleMarkers(ipinfo$longitude, ipinfo$latitude, 
+                         color = '#ff0000', popup=ipinfo$city)
+}
+
 plot_maps <- function(ipinfo, bbox) {
     # Get unique locations to minimize the overwriting of labels.
     ipinfo <- unique(ipinfo[,c(3, 5, 6, 8, 9, 10)])
-    
-    # Plot using the maps package.
-    library(maps)
-    make_plot <- function(ipinfo, bbox) {
-        map("world", xlim=c(bbox$minlon,bbox$maxlon), 
-            ylim=c(bbox$minlat,bbox$maxlat), 
-            col="gray90", fill=TRUE)
-        points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
-        lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
-        text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
-             cex=.7, adj=0, pos=1, col="gray30")
-        if (interactive() == FALSE & new.win == TRUE) locator(1)
-    }
-    
+
     # Show plot in separate graphics device window.
     if (new.win == TRUE) x11()
     
-    x11()
-    make_plot(ipinfo, bbox)
+    # Show a "leaflet" or base plot with the "world" map from "maps".
+    if (map.leaflet == TRUE) {
+        make_leaflet(ipinfo) # BROKEN - WILL ONLY DISPLAY WHEN RUN MANUALLY!
+    } else {
+        make_plot(ipinfo, bbox) 
+    }
     if (interactive() == FALSE) locator(1)
     
     # Save the plot as a PNG image file.
@@ -267,7 +283,7 @@ plot_maps <- function(ipinfo, bbox) {
         png(files$map.png)
         make_plot(ipinfo, bbox)
         dev.off()
-    } 
+    }
 }
 
 view_image <- function(image) {
@@ -295,7 +311,7 @@ print_route_table <- function(ipinfo) {
 # ------------
 
 pkgs <- c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png", 
-          "gsubfn")
+          "gsubfn", "leaflet")
 load_packages(pkgs)
 
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 

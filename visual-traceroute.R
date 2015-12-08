@@ -1,9 +1,11 @@
-# -------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
 # date:   7 Dec. 2015
-# -------------------------------------------------------------------------
+# 
+# Copyright (c) 2015 Brian High (https://github.com/brianhigh). MIT LICENSE.
+# --------------------------------------------------------------------------
 
 # You can also run from a command-line shell (Terminal) prompt in the form:
 #   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
@@ -97,13 +99,12 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
 
 # https://heuristically.wordpress.com/2013/05/20/geolocate-ip-addresses-in-r/
 # http://www.dataanalysistools.net/geocode-ip-addresses-in-r/
+# This function is © Andrew Ziem and DataAnalysisTools.net, respectively.
 freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     # Look up information about an IP address using an online service.
   
-    library(rjson)
     if (1 == length(ip)) {
         # A single IP address
-        require(rjson)
         url <- paste(c("http://freegeoip.net/json/", ip), collapse='')
         ret <- fromJSON(readLines(url, warn=FALSE))
         if (format == 'dataframe') {
@@ -120,7 +121,7 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     }
 }  
 
-# Error handling freegeoip function supplement
+# Error handling freegeoip function © Andrew Ziem
 try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {

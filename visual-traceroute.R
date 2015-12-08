@@ -102,7 +102,7 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
 
 # https://heuristically.wordpress.com/2013/05/20/geolocate-ip-addresses-in-r/
 # http://www.dataanalysistools.net/geocode-ip-addresses-in-r/
-# This function is ? Andrew Ziem and DataAnalysisTools.net, respectively.
+# This function is (c) Andrew Ziem and DataAnalysisTools.net, respectively.
 freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     # Look up information about an IP address using an online service.
   
@@ -124,7 +124,7 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     }
 }  
 
-# Error handling freegeoip function ? Andrew Ziem
+# Error handling freegeoip function Copyright (c) Andrew Ziem
 try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {

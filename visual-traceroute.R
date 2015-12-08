@@ -131,14 +131,14 @@ trace_router <- function(x) {
     
     if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {
         if (Sys.info()["sysname"] == "Windows") {
-            pattern <- "(?:<?[0-9]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
+            pattern <- "(?:<?[0-9.]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
             res <- try(
                 system(paste(
                     'cmd /c "tracert', '-d', x, '>', files$route.txt, '"'), 
                 intern = TRUE))
         }
         else {
-            pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9]+ ms)*"
+            pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
             res <- try(
                 system(paste(
                     "traceroute", "-n", x, ">", files$route.txt), 

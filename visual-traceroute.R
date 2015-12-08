@@ -124,7 +124,8 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     }
 }  
 
-# Error handling freegeoip function Copyright (c) Andrew Ziem
+# Error handling freegeoip function 
+# (by flodel http://stackoverflow.com/questions/17536221)
 try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {

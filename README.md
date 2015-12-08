@@ -4,20 +4,24 @@ This is a simple demo of running a shell utility from within R and using the out
 
 ### License
 
-Unless otherwise noted, everything here is © Brian High and offered under the 
+Unless otherwise noted, everything here is Â© Brian High and offered under the 
 MIT license. See the LICENSE file.
 
 ### Traceroute
 
 The traceroute utility used will be "tracert" on a Windows system and "traceroute" otherwise (Mac, Linux, Unix, etc.).
 
+### Geolocation
+
+Since the traceroute system utility does not produce geographical location information, we will use the [freegeoip](http://freegeoip.net/) service for this purpose.
+
 ### Mapping
 
-Mapping can be done with `ggmap` or `maps`, depending on the configuration of variables early in the R script.
+Mapping can be done with `ggmap` or `maps`, depending on the configuration of variables early in the R script. 
 
-Example data in CSV files and output in PNG files are provided.
+### Example Data
 
-Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the button "Proxy Trace" pressed after you enter the domain as "Remote Address".
+Example data are provided in CSV files and map output examles are provided as PNG files.
 
 ### Route Example
 
@@ -73,3 +77,7 @@ Here are the resulting plots:
 #### `maps` package plot using `map`, `points` and `lines` functions
 
 ![maps plot](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/images/www_cubagob_cu/map.png)
+
+### Other Visual Traceroute Options
+
+Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the button "Proxy Trace" pressed after you enter the domain as "Remote Address".

@@ -21,7 +21,7 @@ Mapping can be done with `ggmap` or `maps`, depending on the configuration of va
 
 ### Example Data
 
-Example data are provided in CSV files and map output examles are provided as PNG files.
+Example data are provided in text files and map output examples are provided as PNG image files.
 
 ### Route Example
 

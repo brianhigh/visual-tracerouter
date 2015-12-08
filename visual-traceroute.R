@@ -240,8 +240,9 @@ plot_ggmap <- function(ipinfo) {
     }
 }
 
-# Plot using the maps package and base plotting.
 make_plot <- function(ipinfo, bbox) {
+    # Plot using the maps package and base plotting.
+    
     map("world", xlim=c(bbox$minlon,bbox$maxlon), 
         ylim=c(bbox$minlat,bbox$maxlat), 
         col="gray90", fill=TRUE)
@@ -252,9 +253,9 @@ make_plot <- function(ipinfo, bbox) {
     if (interactive() == FALSE & new.win == TRUE) locator(1)
 }
 
-# Plot using the maps and leaflet packages
-# http://blog.rstudio.org/2015/06/24/leaflet-interactive-web-maps-with-r/
 make_leaflet <- function(ipinfo) {
+    # Plot using the maps and leaflet packages.
+
     world <- map("world", fill = TRUE, plot = FALSE) 
     leaflet(data=world) %>% 
         addTiles() %>% 

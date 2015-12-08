@@ -11,9 +11,11 @@
 #   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
 #
 # Example: Trace a route to www.gov.za and show the plot in a new window.
-#   Rscript visual-traceroute.R "addr='www.gov.za'; show.map='TRUE'"
+#   Rscript visual-traceroute.R "addr='www.gov.za'; new.win='TRUE'"
 #
 # Any option not listed on the command-line will use the defaults (below).
+# Aside from specifying the "addr" to route, the other defaults were chosen 
+# to maximize speed (e.g. use of a cache and the "maps" package over "ggmap").
 
 # -------------
 # Configuration
@@ -34,7 +36,8 @@ save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
 # Note: If FALSE, RStudio and RGUI on Windows will show the map anyway.
-show.map <- TRUE
+#       As such, this feature is mainly to control behavior from a Terminal.
+new.win <- FALSE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping.
 map.pkg <- "maps"
@@ -99,7 +102,7 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
 
 # https://heuristically.wordpress.com/2013/05/20/geolocate-ip-addresses-in-r/
 # http://www.dataanalysistools.net/geocode-ip-addresses-in-r/
-# This function is © Andrew Ziem and DataAnalysisTools.net, respectively.
+# This function is ? Andrew Ziem and DataAnalysisTools.net, respectively.
 freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     # Look up information about an IP address using an online service.
   
@@ -121,7 +124,7 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     }
 }  
 
-# Error handling freegeoip function © Andrew Ziem
+# Error handling freegeoip function ? Andrew Ziem
 try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
 trace_router <- function(x) {
@@ -223,12 +226,11 @@ plot_ggmap <- function(ipinfo) {
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     
     # Show plot in separate graphics device window.
-    if (show.map == TRUE) {
-        x11()
-        print(p)
-        if (interactive() == FALSE) gglocator(1)
-    }
-    
+    if (new.win == TRUE) x11()
+
+    print(p)
+    if (interactive() == FALSE) gglocator(1)
+
     # Save the plot as a PNG image file.
     if (save.plot == TRUE) {
         ggsave(file=files$ggmap.png, plot=p)
@@ -249,15 +251,15 @@ plot_maps <- function(ipinfo, bbox) {
         lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
         text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
              cex=.7, adj=0, pos=1, col="gray30")
-        if (interactive() == FALSE & show.map == TRUE) locator(1)
+        if (interactive() == FALSE & new.win == TRUE) locator(1)
     }
     
     # Show plot in separate graphics device window.
-    if (show.map == TRUE) {
-        x11()
-        make_plot(ipinfo, bbox)
-        if (interactive() == FALSE) locator(1)
-    }
+    if (new.win == TRUE) x11()
+    
+    x11()
+    make_plot(ipinfo, bbox)
+    if (interactive() == FALSE) locator(1)
     
     # Save the plot as a PNG image file.
     if (save.plot == TRUE) {
@@ -270,7 +272,7 @@ plot_maps <- function(ipinfo, bbox) {
 view_image <- function(image) {
     # Load a PNG image from a file and view it.
   
-    if (show.map == TRUE) x11()
+    if (new.win == TRUE) x11()
     plot.new()
     img <- readPNG(image)
     grid::grid.raster(img)

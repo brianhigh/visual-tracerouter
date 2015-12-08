@@ -33,7 +33,7 @@ use.cache <- TRUE
 save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
-# Note: If FALSE, RStudio shows the plot in the Plots tab if it is selected.
+# Note: If FALSE, RStudio and RGUI on Windows will show the map anyway.
 show.map <- TRUE
 
 # Choose "maps" or "ggmap" to specify the package to use for mapping.

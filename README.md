@@ -23,29 +23,30 @@ Compare to: http://www.yougetsignal.com/tools/visual-tracert/ ... with the butto
 
 For reference, [this is example output](https://raw.githubusercontent.com/brianhigh/visual-tracerouter/master/data/www_cubagob_cu/route.txt) from `tracert` on a Windows system:
 
-`C:\Users\nobody>tracert -d www.cubagob.cu`
+`C:\Users\nobody>tracert -d -h 30 www.cubagob.cu`
 
 ```
+
 Tracing route to vhunix.ceniai.inf.cu [169.158.128.86]
 over a maximum of 30 hops:
 
-  1    <1 ms    <1 ms    <1 ms  128.95.230.102 
+  1    <1 ms    <1 ms    <1 ms  128.95.21.102 
   2    <1 ms    <1 ms    <1 ms  10.132.1.65 
-  3    <1 ms    <1 ms    <1 ms  10.132.1.66 
-  4     1 ms     1 ms     1 ms  209.124.188.132 
-  5     1 ms     1 ms     1 ms  198.104.202.6 
-  6     1 ms     1 ms     1 ms  198.104.202.5 
-  7     1 ms     1 ms     1 ms  64.86.123.41 
-  8     1 ms     1 ms     1 ms  64.86.124.25 
-  9    70 ms    70 ms    71 ms  64.86.124.22 
- 10    69 ms    69 ms    69 ms  66.198.96.45 
- 11   220 ms   220 ms   220 ms  66.198.96.34 
- 12   189 ms   189 ms   189 ms  200.0.16.85 
- 13   189 ms   189 ms   189 ms  200.0.16.196 
- 14   192 ms   193 ms   192 ms  200.0.16.182 
- 15   190 ms   190 ms   190 ms  169.158.128.54 
- 16     *        *        *     Request timed out.
- 17     *        *        *     Request timed out.
+  3     1 ms    <1 ms    <1 ms  10.132.1.66 
+  4     1 ms    <1 ms    <1 ms  10.132.0.49 
+  5     1 ms     1 ms     1 ms  205.175.118.2 
+  6     2 ms     1 ms     1 ms  209.124.188.132 
+  7     2 ms     1 ms     1 ms  198.104.202.6 
+  8     2 ms     1 ms     2 ms  198.104.202.5 
+  9     2 ms     1 ms     1 ms  64.86.123.41 
+ 10     2 ms     2 ms     2 ms  64.86.124.25 
+ 11    71 ms    70 ms    71 ms  64.86.124.30 
+ 12    70 ms    70 ms    71 ms  66.198.96.45 
+ 13   261 ms   262 ms   262 ms  66.198.96.34 
+ 14   215 ms   210 ms   215 ms  200.0.16.85 
+ 15   210 ms     *      210 ms  200.0.16.196 
+ 16   230 ms   220 ms   212 ms  200.0.16.182 
+ 17   213 ms   233 ms   234 ms  169.158.128.54 
  18     *        *        *     Request timed out.
  19     *        *        *     Request timed out.
  20     *        *        *     Request timed out.

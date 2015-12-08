@@ -273,7 +273,7 @@ plot_maps <- function(ipinfo, bbox) {
     
     # Show a "leaflet" or base plot with the "world" map from "maps".
     if (map.leaflet == TRUE) {
-        make_leaflet(ipinfo) # BROKEN - WILL ONLY DISPLAY WHEN RUN MANUALLY!
+        make_leaflet(ipinfo) # Only shows if run manually from RStudio console!
     } else {
         make_plot(ipinfo, bbox) 
     }

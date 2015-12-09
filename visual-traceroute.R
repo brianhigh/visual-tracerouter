@@ -61,8 +61,9 @@ new.win <- FALSE
 # Choose "maps" or "ggmap" to specify the package to use for mapping.
 map.pkg <- "maps"
 
-# TRUE will open a "leaflet" map in RStudio (or FALSE will not).
-map.leaflet <- FALSE # CURRENTLY BROKEN - WILL NOT DISPLAY WHEN "SOURCED"!
+# TRUE will create an HTML file containing an interactive "leaflet" map.
+# NOTE: Only works when running from within RStudio. Requires: map.pkg=TRUE
+map.leaflet <- TRUE
 
 # These folders will be used to store data (text) and images.
 data.dir <- "data"
@@ -274,14 +275,30 @@ make_plot <- function(ipinfo, bbox) {
 
 make_leaflet <- function(ipinfo) {
     # Plot using the maps and leaflet packages.
-    # Only shows the map in "Viewer" if run manually from RStudio console!
+    # Only shows the map in "Viewer" tab if run manually from RStudio console.
+    # So, we will instead save the leaflet as a web page (HTML).  The map will 
+    # then show in browser window (automatically) if running from RStudio.
 
+    # Only load these packages if this function is called.
+    load_packages(c("maps", "leaflet", "htmlwidgets", "rstudioapi"))
+
+    # Create the leaflet from the the "world" map from the "maps" package.
     world <- map("world", fill = TRUE, plot = FALSE) 
-    leaflet(data=world) %>% 
-        addTiles() %>% 
-        addPolylines(ipinfo$longitude, ipinfo$latitude) %>%
-        addCircleMarkers(ipinfo$longitude, ipinfo$latitude, 
-                         color = '#ff0000', popup=ipinfo$city)
+    l <- leaflet(data=world) %>% 
+                addTiles() %>% 
+                addPolylines(ipinfo$longitude, ipinfo$latitude) %>%
+                addCircleMarkers(ipinfo$longitude, ipinfo$latitude, 
+                                color = '#ff0000', popup=ipinfo$city)
+    
+    # Store leaflet in an HTML file. (Will be overwritten if already exists.)
+    leafFile <- "leaflet.html"
+    saveWidget(l, file=leafFile)
+    
+    # Only open HTML file in web browser if running this script from RStudio.
+    if (Sys.getenv("RSTUDIO") == "1") {
+        viewer <- getOption("viewer")
+        viewer(leafFile) 
+    }
 }
 
 plot_maps <- function(ipinfo, bbox) {
@@ -291,12 +308,8 @@ plot_maps <- function(ipinfo, bbox) {
     # Show plot in separate graphics device window.
     if (new.win == TRUE) x11()
     
-    # Show a "leaflet" or base plot with the "world" map from "maps".
-    if (map.leaflet == TRUE) {
-        make_leaflet(ipinfo) # Only shows if run manually from RStudio console!
-    } else {
-        make_plot(ipinfo, bbox) 
-    }
+    # Show a base plot with the "world" map from "maps".
+    make_plot(ipinfo, bbox)
     if (interactive() == FALSE) locator(1)
     
     # Save the plot as a PNG image file.
@@ -332,7 +345,7 @@ print_route_table <- function(ipinfo) {
 # ------------
 
 pkgs <- c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png", 
-          "gsubfn", "leaflet")
+          "gsubfn")
 load_packages(pkgs)
 
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 
@@ -369,6 +382,8 @@ if (nrow(route) > 0) {
                 view_image(files$map.png)
             }
             else plot_maps(ipinfo, get_bbox(ipinfo))
+          
+            if (map.leaflet == TRUE) make_leaflet(ipinfo)
         }
         
         print_route_table(ipinfo)

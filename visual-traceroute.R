@@ -28,7 +28,7 @@
 #   Rscript visual-traceroute.R "arg1='value'; arg2='value'; arg3='...'"
 #
 # Example: Trace a route to www.gov.za and show the plot in a new window.
-#   Rscript visual-traceroute.R "addr='www.gov.za'; new.win='TRUE'"
+#   Rscript visual-traceroute.R "addr='www.gov.bb'; new.win='TRUE'"
 #
 # Any option not listed on the command-line will use the defaults (below).
 # Aside from specifying the "addr" to route, the other defaults were chosen 

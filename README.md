@@ -18,7 +18,7 @@ Since the traceroute system utility does not produce geographical location infor
 
 ### Mapping
 
-Mapping can be done with `ggmap` or `maps`, depending on the configuration of variables early in the R script. 
+Mapping can be done with `leaflet`, `ggmap` or `maps`, depending on the configuration of variables early in the R script. 
 
 ### Example Data
 

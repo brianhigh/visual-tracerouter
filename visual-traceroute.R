@@ -266,7 +266,7 @@ make_plot <- function(ipinfo, bbox) {
     points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
     lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
     text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
-        cex=.7, adj=0, pos=1, col="gray30")
+        cex=.7, adj=0, pos=1, col="red")
     if (interactive() == FALSE & new.win == TRUE) locator(1)
 }
 

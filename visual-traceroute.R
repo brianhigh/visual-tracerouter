@@ -45,7 +45,7 @@
 # Enter the remote address (a domain name or an IPv4 address).
 # Example-1: addr <- "www.cubagob.cu"
 # Example-2: addr <- "169.158.128.86"
-addr <- "pm.gov.pg/"
+addr <- "www.cubagob.cu"
 
 # TRUE will use old data if present (or FALSE will not, regenerating it).
 use.cache <- TRUE
@@ -60,7 +60,7 @@ new.win <- FALSE
 
 # Choose "maps", "ggmap", or "leaflet" to specify the mapping package.
 # NOTE: "leaflet" opens the map only when running from within RStudio.
-map.pkg <- "leaflet"
+map.pkg <- "maps"
 
 # These folders will be used to store data (text) and images.
 data.dir <- "data"

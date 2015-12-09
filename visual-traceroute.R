@@ -45,7 +45,7 @@
 # Enter the remote address (a domain name or an IPv4 address).
 # Example-1: addr <- "www.cubagob.cu"
 # Example-2: addr <- "169.158.128.86"
-addr <- "www.cubagob.cu"
+addr <- "pm.gov.pg/"
 
 # TRUE will use old data if present (or FALSE will not, regenerating it).
 use.cache <- TRUE

@@ -199,16 +199,16 @@ get_ipinfo <- function (route) {
     # Get geolocation info for all IP addresses in route.
     
     # Only load these packages if this function is called.
-    load_packages(c("dplyr"))
+    load_packages(c("data.table"))
     
-    ipinfo <- rbind_all(
-        lapply(route$addr, function(x) suppressWarnings(
-            as.data.frame(try_ip(x), stringsAsFactors=FALSE))))
+    # Use rbindlist function of datatable package to avoid coersion warnings.
+    ipinfo <- as.data.frame(rbindlist(lapply(route$addr, function(x) 
+        as.data.table(try_ip(x))), fill=TRUE))
     
     ipinfo$mean_rtt <- route$mean_rtt
     ipinfo <- ipinfo[ipinfo$latitude != 0 & ipinfo$longitude != 0, ]
-    ipinfo$latitude <- as.numeric(ipinfo$latitude)
-    ipinfo$longitude <- as.numeric(ipinfo$longitude)
+    ipinfo$latitude <- as.numeric(as.character(ipinfo$latitude))
+    ipinfo$longitude <- as.numeric(as.character(ipinfo$longitude))
     rownames(ipinfo) <- NULL
     write.csv(ipinfo, files$ipinfo.csv, row.names = FALSE)
     

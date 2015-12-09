@@ -54,16 +54,13 @@ use.cache <- TRUE
 save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
-# Note: If FALSE, RStudio and RGUI on Windows will show the map anyway.
+# NOTE: If FALSE, RStudio and RGUI on Windows will show the map anyway.
 #       As such, this feature is mainly to control behavior from a Terminal.
 new.win <- FALSE
 
-# Choose "maps" or "ggmap" to specify the package to use for mapping.
-map.pkg <- "maps"
-
-# TRUE will create an HTML file containing an interactive "leaflet" map.
-# NOTE: Only works when running from within RStudio. Requires: map.pkg=TRUE
-map.leaflet <- TRUE
+# Choose "maps", "ggmap", or "leaflet" to specify the mapping package.
+# NOTE: "leaflet" opens the map only when running from within RStudio.
+map.pkg <- "leaflet"
 
 # These folders will be used to store data (text) and images.
 data.dir <- "data"
@@ -274,21 +271,24 @@ make_plot <- function(ipinfo, bbox) {
 }
 
 make_leaflet <- function(ipinfo) {
-    # Plot using the maps and leaflet packages.
+    # Plot using the leaflet package.
+
     # Only shows the map in "Viewer" tab if run manually from RStudio console.
     # So, we will instead save the leaflet as a web page (HTML).  The map will 
     # then show in browser window (automatically) if running from RStudio.
 
     # Only load these packages if this function is called.
-    load_packages(c("maps", "leaflet", "htmlwidgets", "rstudioapi"))
+    load_packages(c("leaflet", "htmlwidgets", "rstudioapi"))
 
-    # Create the leaflet from the the "world" map from the "maps" package.
-    world <- map("world", fill = TRUE, plot = FALSE) 
-    l <- leaflet(data=world) %>% 
+    # Create the leaflet.
+    l <- leaflet() %>% 
                 addTiles() %>% 
                 addPolylines(ipinfo$longitude, ipinfo$latitude) %>%
                 addCircleMarkers(ipinfo$longitude, ipinfo$latitude, 
-                                color = '#ff0000', popup=ipinfo$city)
+                                color = '#ff0000', 
+                                popup=paste(ipinfo$city, 
+                                            ipinfo$region_code,
+                                            ipinfo$country_code))
     
     # Store leaflet in an HTML file. (Will be overwritten if already exists.)
     leafFile <- "leaflet.html"
@@ -382,10 +382,10 @@ if (nrow(route) > 0) {
                 view_image(files$map.png)
             }
             else plot_maps(ipinfo, get_bbox(ipinfo))
-          
-            if (map.leaflet == TRUE) make_leaflet(ipinfo)
         }
         
+        if (map.pkg == "leaflet") make_leaflet(ipinfo)
+      
         print_route_table(ipinfo)
     }
 }

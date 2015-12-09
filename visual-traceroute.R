@@ -305,12 +305,9 @@ make_leaflet <- function(ipinfo) {
     l <- leaflet() %>% 
         addTiles() %>% 
         addPolylines(longitude, latitude) %>%
-        addCircleMarkers(longitude, latitude, 
-                         color = '#ff0000', 
-                         popup=paste(city, 
-                                     region_code,
-                                     country_code, "-",
-                                     ip))
+        addCircleMarkers(longitude, latitude, color = '#ff0000', 
+                         popup=paste(city, region_code, country_code, "-",
+                                     ip, "(", round(mean_rtt, 0), "ms )"))
     
     detach(ipinfo)
     

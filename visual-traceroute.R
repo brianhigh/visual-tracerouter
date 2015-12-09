@@ -2,7 +2,7 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   8 Dec. 2015
+# date:   9 Dec. 2015
 # --------------------------------------------------------------------------
 #
 # Copyright (C) 2015 Brian High (https://github.com/brianhigh)
@@ -57,6 +57,9 @@ save.plot <- TRUE
 # NOTE: If FALSE, RStudio and RGUI on Windows will show the map anyway.
 #       As such, this feature is mainly to control behavior from a Terminal.
 new.win <- FALSE
+
+# TRUE will print a text table of route data (or FALSE will not).
+show.table <- TRUE
 
 # Choose "maps", "ggmap", or "leaflet" to specify the mapping package.
 # NOTE: "leaflet" opens the map only when running from within RStudio.
@@ -125,7 +128,10 @@ create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
 # This function is (c) Andrew Ziem and DataAnalysisTools.net, respectively.
 freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
     # Look up information about an IP address using an online service.
-  
+    
+    # Only load these packages if this function is called.
+    load_packages(c("rjson"))
+    
     if (1 == length(ip)) {
         # A single IP address
         url <- paste(c("http://freegeoip.net/json/", ip), collapse='')
@@ -151,6 +157,9 @@ try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 trace_router <- function(x) {
     # Run the system traceroute utility on the supplied address.
     
+    # Only load these packages if this function is called.
+    load_packages(c("stringr", "gsubfn"))
+    
     pattern <- ""
     route <- c()
     
@@ -160,13 +169,13 @@ trace_router <- function(x) {
             res <- try(
                 system(paste(
                     'cmd /c "tracert -d -h 30', x, '>', files$route.txt, '"'), 
-                intern = TRUE))
+                    intern = TRUE))
         } else {
             pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
             res <- try(
                 system(paste(
                     "traceroute -n -m 30", x, ">", files$route.txt), 
-                intern = TRUE))
+                    intern = TRUE))
         }        
     }
     
@@ -188,8 +197,10 @@ trace_router <- function(x) {
 
 get_ipinfo <- function (route) {
     # Get geolocation info for all IP addresses in route.
-  
-    library(dplyr)
+    
+    # Only load these packages if this function is called.
+    load_packages(c("dplyr"))
+    
     ipinfo <- rbind_all(
         lapply(route$addr, function(x) suppressWarnings(
             as.data.frame(try_ip(x), stringsAsFactors=FALSE))))
@@ -216,7 +227,7 @@ get_endpoints <- function(ipinfo) {
 
 get_bbox <- function(ipinfo) {   
     # Calculate map boundaries.
-  
+    
     maxlat <- ceiling(max(ipinfo$latitude))
     minlat <- floor(min(ipinfo$latitude))
     maxlon <- ceiling(max(ipinfo$longitude))
@@ -239,18 +250,20 @@ get_bbox <- function(ipinfo) {
 
 plot_ggmap <- function(ipinfo) {
     # Plot using the ggmap package.
-  
-    library(ggmap)
+    
+    # Only load these packages if this function is called.
+    load_packages(c("ggmap"))
+    
     p <- qmplot(longitude, latitude, data = ipinfo, source="stamen", 
                 maptype = "toner-lite", mapcolor="bw", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)
     
     # Show plot in separate graphics device window.
     if (new.win == TRUE) x11()
-
+    
     print(p)
     if (interactive() == FALSE) gglocator(1)
-
+    
     # Save the plot as a PNG image file.
     if (save.plot == TRUE) {
         ggsave(file=files$ggmap.png, plot=p)
@@ -258,53 +271,65 @@ plot_ggmap <- function(ipinfo) {
 }
 
 make_plot <- function(ipinfo, bbox) {
-    # Plot using the maps package and base plotting.
+    # Make plot using the maps package and base plotting.
     
-    map("world", xlim=c(bbox$minlon,bbox$maxlon), 
-        ylim=c(bbox$minlat,bbox$maxlat), 
+    # Only load these packages if this function is called.
+    load_packages(c("maps"))
+    
+    attach(ipinfo)
+    attach(bbox)
+    map("world", xlim=c(minlon,maxlon), 
+        ylim=c(minlat,maxlat), 
         col="gray90", fill=TRUE)
-    points(x = ipinfo$longitude, y = ipinfo$latitude, col = "red")
-    lines(x = ipinfo$longitude, y = ipinfo$latitude, col = "blue")
-    text(ipinfo$longitude, ipinfo$latitude, ipinfo$city, 
-        cex=.7, adj=0, pos=1, col="red")
+    points(x = longitude, y = latitude, col = "red")
+    lines(x = longitude, y = latitude, col = "blue")
+    text(longitude, latitude, city, 
+         cex=.7, adj=0, pos=1, col="red")
     if (interactive() == FALSE & new.win == TRUE) locator(1)
 }
 
 make_leaflet <- function(ipinfo) {
     # Plot using the leaflet package.
-
+    
     # Only shows the map in "Viewer" tab if run manually from RStudio console.
     # So, we will instead save the leaflet as a web page (HTML).  The map will 
     # then show in browser window (automatically) if running from RStudio.
-
+    
     # Only load these packages if this function is called.
-    load_packages(c("leaflet", "htmlwidgets", "rstudioapi"))
-
+    load_packages(c("magrittr", "leaflet", "htmlwidgets", "rstudioapi"))
+    
     # Create the leaflet.
+    attach(ipinfo)
     l <- leaflet() %>% 
-                addTiles() %>% 
-                addPolylines(ipinfo$longitude, ipinfo$latitude) %>%
-                addCircleMarkers(ipinfo$longitude, ipinfo$latitude, 
-                                color = '#ff0000', 
-                                popup=paste(ipinfo$city, 
-                                            ipinfo$region_code,
-                                            ipinfo$country_code))
+        addTiles() %>% 
+        addPolylines(longitude, latitude) %>%
+        addCircleMarkers(longitude, latitude, 
+                         color = '#ff0000', 
+                         popup=paste(city, 
+                                     region_code,
+                                     country_code, "-",
+                                     ip))
     
     # Store leaflet in an HTML file. (Will be overwritten if already exists.)
-    leafFile <- "leaflet.html"
-    saveWidget(l, file=leafFile)
+    leaflet.html <- "leaflet.html"
+    saveWidget(l, file=leaflet.html)
     
     # Only open HTML file in web browser if running this script from RStudio.
     if (Sys.getenv("RSTUDIO") == "1") {
         viewer <- getOption("viewer")
-        viewer(leafFile) 
+        viewer(leaflet.html) 
     }
+    
+    # NOTE: We will not save this output with other cached map output,
+    # but will, instead, regenerate this HTML file as needed if rerun.
 }
 
 plot_maps <- function(ipinfo, bbox) {
+    # Plot a route on a map using the maps package.
+    
     # Get unique locations to minimize the overwriting of labels.
     ipinfo <- unique(ipinfo[,c(3, 5, 6, 8, 9, 10)])
-
+    
     # Show plot in separate graphics device window.
     if (new.win == TRUE) x11()
     
@@ -322,7 +347,10 @@ plot_maps <- function(ipinfo, bbox) {
 
 view_image <- function(image) {
     # Load a PNG image from a file and view it.
-  
+    
+    # Only load these packages if this function is called.
+    load_packages(c("png"))
+    
     if (new.win == TRUE) x11()
     plot.new()
     img <- readPNG(image)
@@ -336,6 +364,10 @@ view_image <- function(image) {
 
 print_route_table <- function(ipinfo) {
     # Print out a table of the route.
+    
+    # Only load these packages if this function is called.
+    load_packages(c("magrittr", "pander"))
+    
     ipinfo[, c("ip", "mean_rtt", "city", "region_name", "country_name")] %>% 
         pandoc.table(style="simple")
 }
@@ -343,10 +375,6 @@ print_route_table <- function(ipinfo) {
 # ------------
 # Main Routine
 # ------------
-
-pkgs <- c("stringr", "rjson", "dplyr", "ggmap", "maps", "pander", "png", 
-          "gsubfn")
-load_packages(pkgs)
 
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 
                                       data.dir, images.dir)
@@ -385,7 +413,7 @@ if (nrow(route) > 0) {
         }
         
         if (map.pkg == "leaflet") make_leaflet(ipinfo)
-      
-        print_route_table(ipinfo)
+        
+        if (show.table == TRUE) print_route_table(ipinfo)
     }
 }

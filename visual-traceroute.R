@@ -286,6 +286,8 @@ make_plot <- function(ipinfo, bbox) {
     text(longitude, latitude, city, 
          cex=.7, adj=0, pos=1, col="red")
     if (interactive() == FALSE & new.win == TRUE) locator(1)
+    detach(bbox)
+    detach(ipinfo)
 }
 
 make_leaflet <- function(ipinfo) {
@@ -309,6 +311,8 @@ make_leaflet <- function(ipinfo) {
                                      region_code,
                                      country_code, "-",
                                      ip))
+    
+    detach(ipinfo)
     
     # Store leaflet in an HTML file. (Will be overwritten if already exists.)
     leaflet.html <- "leaflet.html"

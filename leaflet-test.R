@@ -6,11 +6,11 @@
 # Install packages and load into memory
 for (pkg in c("magrittr","leaflet")) {
     if(pkg %in% rownames(installed.packages()) == FALSE) {
-        install.packages(pkg,
+        install.packages(pkg, quiet = TRUE, 
                          repos="http://cran.fhcrc.org",
                          dependencies=TRUE)
     }
-    require(pkg, character.only = TRUE)
+    require(pkg, character.only = TRUE, quietly = TRUE)
 }
 
 # Load data into a data.frame

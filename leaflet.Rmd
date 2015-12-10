@@ -3,7 +3,8 @@ title: "Test Leaflet of Route to Havana, Cuba"
 output: html_document
 ---
 
-This is the route to Havana, Cuba as displayed using a [Leaflet](http://leafletjs.com/).
+This is the route to Havana, Cuba as displayed using a 
+[Leaflet](http://leafletjs.com/).
 
 ```{r, echo=FALSE}
 # Install packages and load into memory

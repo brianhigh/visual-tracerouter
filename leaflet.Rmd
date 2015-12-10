@@ -3,10 +3,16 @@ title: "Test Leaflet of Route to Havana, Cuba"
 output: html_document
 ---
 
-This is the route to Havana, Cuba as displayed using a 
-[Leaflet](http://leafletjs.com/).
+```{r set_options, echo=FALSE, message=FALSE}
+# Configure `knitr` options.
+library(knitr)
+opts_chunk$set(tidy=FALSE, cache=FALSE, echo=FALSE)
+```
 
-```{r, echo=FALSE}
+This is a [Internet route trace](https://en.wikipedia.org/wiki/Traceroute)
+to Havana, Cuba as displayed visually using a [Leaflet](http://leafletjs.com/).
+
+```{r}
 # Install packages and load into memory
 for (pkg in c("magrittr", "leaflet", "knitr")) {
     if(pkg %in% rownames(installed.packages()) == FALSE) {
@@ -14,7 +20,8 @@ for (pkg in c("magrittr", "leaflet", "knitr")) {
                          repos="http://cran.fhcrc.org",
                          dependencies=TRUE)
     }
-    require(pkg, character.only = TRUE, quietly = TRUE)
+    suppressWarnings(suppressPackageStartupMessages(
+        require(pkg, character.only = TRUE, quietly = TRUE)))
 }
 
 # Load data into a data.frame
@@ -59,6 +66,6 @@ detach(ipinfo)
 
 Here is a table of the route data.
 
-```{r, echo=FALSE, results='asis'}
+```{r, results='asis'}
 ipinfo %>% kable
 ```

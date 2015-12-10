@@ -1,6 +1,6 @@
 # This is a test of the leaflet package using data from `traceroute`. Run this
-# code in RStudio. It will not show the leaflet map in the "Viewer" tab of 
-# RStudio if script is "sourced". Therefore either paste this code into the 
+# code in RStudio. It may not show the leaflet map in the "Viewer" tab of 
+# RStudio if script is "sourced". If so, either paste this code into the 
 # console or highlight the code in the editor window and "Run" (Ctrl/Cmd-enter).
 
 # Install packages and load into memory

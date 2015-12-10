@@ -7,7 +7,7 @@ This is the route to Havana, Cuba as displayed using a [Leaflet](http://leafletj
 
 ```{r, echo=FALSE}
 # Install packages and load into memory
-for (pkg in c("magrittr","leaflet")) {
+for (pkg in c("magrittr", "leaflet", "knitr")) {
     if(pkg %in% rownames(installed.packages()) == FALSE) {
         install.packages(pkg, quiet = TRUE, 
                          repos="http://cran.fhcrc.org",
@@ -56,3 +56,8 @@ leaflet() %>%
 detach(ipinfo)
 ```
 
+Here is a table of the route data.
+
+```{r, echo=FALSE, results='asis'}
+ipinfo %>% kable
+```

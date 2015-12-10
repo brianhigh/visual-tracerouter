@@ -4,7 +4,7 @@
 # console or highlight the code in the editor window and "Run" (Ctrl/Cmd-enter).
 
 # Install packages and load into memory
-for (pkg in c("magrittr","leaflet")) {
+for (pkg in c("magrittr","leaflet", "pander")) {
     if(pkg %in% rownames(installed.packages()) == FALSE) {
         install.packages(pkg, quiet = TRUE, 
                          repos="http://cran.fhcrc.org",
@@ -50,4 +50,5 @@ leaflet() %>%
                      popup=paste(city, region_code, country_code, "-",
                                  ip, "(", round(mean_rtt, 0), "ms )"))
 
+ipinfo %>% pandoc.table(style="rmarkdown")
 detach(ipinfo)

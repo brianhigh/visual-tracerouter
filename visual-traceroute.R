@@ -36,6 +36,9 @@
 #
 # --------------------------------------------------------------------------
 
+# Clear R's workspace memory to start with a fresh workspace.
+rm(list=ls())
+
 # -------------
 # Configuration
 # -------------
@@ -160,35 +163,14 @@ freegeoip <- function(ip, format = ifelse(length(ip)==1,'list','dataframe')) {
 # (by flodel http://stackoverflow.com/questions/17536221)
 try_ip <- function(ip) suppressWarnings(try(freegeoip(ip), silent = TRUE))
 
-trace_router <- function(x) {
-    # Run the system traceroute utility on the supplied address.
-    
+trace_parser <- function(pattern) {
+    # Read, parse, and clean the output of traceroute from a text file.
+
     # Only load these packages if this function is called.
     load_packages(c("stringr", "gsubfn"))
     
-    pattern <- ""
-    route <- c()
-    
-    if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {
-        if (Sys.info()["sysname"] == "Windows") {
-            pattern <- "(?:<?[0-9.]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
-            res <- try(
-                system(paste(
-                    'cmd /c "tracert -d -h 30', x, '>', files$route.txt, '"'), 
-                    intern = TRUE))
-        } else {
-            pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
-            traceroute <- "traceroute -n -m 30"
-            if (use.icmp == TRUE) traceroute <- paste0(c(traceroute, " -I"), 
-                                                       collapse = "")
-            res <- try(
-                system(paste(
-                    traceroute, x, ">", files$route.txt), 
-                    intern = TRUE))
-        }        
-    }
-    
-    if (file.exists(files$route.txt) == TRUE) {
+    # Using supplied pattern, parse traceroute text, grabbing matching strings.
+    if (pattern != "" & file.exists(files$route.txt) == TRUE) {
         route.string <- paste(readLines(files$route.txt), collapse=" ")
         route <- unlist(str_extract_all(route.string, pattern))[-1]
         rtt <- strapply(route, "([0-9.]+) ms", as.numeric)
@@ -200,8 +182,47 @@ trace_router <- function(x) {
         if (nrow(route) > 0) {
             write.csv(route, files$route.csv, row.names = FALSE)
         }
+        
+        return(route)
+
+    } else {
+        # Return an empty data frame if this fails.
+        return(data.frame(x=NULL))
     }
-    return(route)
+}
+
+trace_router <- function(addr) {
+    # Run the system traceroute utility on the address and save output as text.
+    
+    pattern <- ""
+    
+    # Contruct a pattern-match string (regular expression) and shell command.
+    if (Sys.info()["sysname"] == "Windows") {
+        # Windows uses a `tracert` command to trace internet routes.
+        pattern <- "(?:<?[0-9.]+ ms[ *]+)*(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
+        traceroute <- paste(
+            'cmd /c "tracert -d -h 30', addr, '>', files$route.txt, '"')
+    } else {
+        # POSIX systems (OSX, Linux, Unix) use a similar `traceroute` command.
+        pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
+        traceroute <- "traceroute -n -m 30"
+        
+        # Use the command-line option "-I" if we configured for ICMP ECHO.
+        if (use.icmp == TRUE) { 
+            traceroute <- paste0(c(traceroute, " -I"), collapse = "")
+        }
+        
+        traceroute <- paste(traceroute, addr, ">", files$route.txt)
+    }
+    
+    if (use.cache == FALSE | file.exists(files$route.txt) == FALSE) {
+        # Run the shell command contructed above to run traceroute.
+        cat(paste("\n", "Running command:", "\n", traceroute, "\n"))
+        res <- try(system(traceroute, intern = TRUE))
+    }
+    
+    # Convert text output into a data frame and return it.
+    return(trace_parser(pattern))
 }
 
 get_ipinfo <- function (route) {
@@ -389,7 +410,7 @@ print_route_table <- function(ipinfo) {
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 
                                       data.dir, images.dir)
 
-cat(paste(c("Tracing route to:", addr, "...", "\n")))
+cat(paste(c("\n", "Tracing route to:", addr, "...", "\n")))
 
 if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
     route <- read.csv(files$route.csv, stringsAsFactors=FALSE)
@@ -403,7 +424,8 @@ if (nrow(route) > 0) {
     if (use.cache == TRUE & file.exists(files$ipinfo.csv) == TRUE) {
         ipinfo <- read.csv(files$ipinfo.csv, stringsAsFactors=FALSE)
     } else {
-        cat(paste(c("Geocoding addresses ... This may take a while ..."), "\n"))
+        cat(paste(
+            c("\n", "Geocoding addresses ... This may take a while ..."), "\n"))
         ipinfo <- get_ipinfo(route)
     }
     

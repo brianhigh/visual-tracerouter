@@ -57,7 +57,7 @@ use.cache <- TRUE
 save.plot <- TRUE
 
 # TRUE will open a separate window to show the map (or FALSE will not).
-# NOTE: If FALSE, RStudio and RGUI on Windows will show the map anyway.
+# NOTE: If FALSE, RStudio (and RGUI on Windows) will show the map anyway.
 #       As such, this feature is mainly to control behavior from a Terminal.
 new.win <- FALSE
 
@@ -415,7 +415,7 @@ cat(paste(c("\n", "Tracing route to:", addr, "...", "\n")))
 if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
     route <- read.csv(files$route.csv, stringsAsFactors=FALSE)
 } else {
-    cat(paste(c("This may take a while ..."), "\n"))
+    cat(paste(c(" This may take a while ..."), "\n"))
     route <- trace_router(addr)
 }
 

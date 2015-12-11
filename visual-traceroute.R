@@ -2,7 +2,7 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   9 Dec. 2015
+# date:   10 Dec. 2015
 # --------------------------------------------------------------------------
 #
 # Copyright (C) 2015 Brian High (https://github.com/brianhigh)
@@ -64,6 +64,12 @@ show.table <- TRUE
 # Choose "maps", "ggmap", or "leaflet" to specify the mapping package.
 # NOTE: "leaflet" opens the map only when running from within RStudio.
 map.pkg <- "maps"
+
+# TRUE will use ICMP ECHO Request messages for traceroute (or FALSE will not).
+# This option may require administrative rights on Linux when set to TRUE.
+# However, this option may be required to get through certain firewalls.
+# Ignore this for Windows, since ICMP ECHO is the default in Windows (tracert).
+use.icmp <- FALSE
 
 # These folders will be used to store data (text) and images.
 data.dir <- "data"
@@ -172,9 +178,12 @@ trace_router <- function(x) {
                     intern = TRUE))
         } else {
             pattern <- "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?:[ *]+<?[0-9.]+ ms)*"
+            traceroute <- "traceroute -n -m 30"
+            if (use.icmp == TRUE) traceroute <- paste0(c(traceroute, " -I"), 
+                                                       collapse = "")
             res <- try(
                 system(paste(
-                    "traceroute -n -m 30", x, ">", files$route.txt), 
+                    traceroute, x, ">", files$route.txt), 
                     intern = TRUE))
         }        
     }
@@ -367,10 +376,10 @@ print_route_table <- function(ipinfo) {
     # Print out a table of the route.
     
     # Only load these packages if this function is called.
-    load_packages(c("magrittr", "pander"))
+    load_packages(c("magrittr", "knitr"))
     
     ipinfo[, c("ip", "mean_rtt", "city", "region_name", "country_name")] %>% 
-        pandoc.table(style="simple")
+        kable()
 }
 
 # ------------

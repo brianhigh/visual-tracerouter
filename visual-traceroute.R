@@ -2,7 +2,7 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   10 Dec. 2015
+# date:   11 Dec. 2015
 # --------------------------------------------------------------------------
 #
 # Copyright (C) 2015 Brian High (https://github.com/brianhigh)
@@ -249,9 +249,9 @@ get_endpoints <- function(ipinfo) {
     # Find end points of each segment by copying lat/lon and shifting up a row.
     
     ipinfo$next_latitude <- as.vector(
-        c(ipinfo$latitude[-1], last(ipinfo$latitude)), mode="numeric")
+        c(ipinfo$latitude[-1], tail(ipinfo$latitude, 1)), mode="numeric")
     ipinfo$next_longitude <- as.vector(
-        c(ipinfo$longitude[-1], last(ipinfo$longitude)), mode="numeric")
+        c(ipinfo$longitude[-1], tail(ipinfo$longitude, 1)), mode="numeric")
     return(ipinfo)
 }
 

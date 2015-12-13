@@ -1,0 +1,82 @@
+---
+title: "Whois Demo"
+output: 
+    html_document:
+        keep_md: true
+---
+
+We will first install a [whois](https://en.wikipedia.org/wiki/WHOIS) utility 
+if we are running Windows, as this operating system does not come with this 
+tool by default. Other popular operating systems like OSX and Linux come with
+`whois` pre-installed, so we will not perform this step on those systems.
+
+```{r}
+if (Sys.info()["sysname"] == "Windows") {
+    # Get the whois.exe file for Windows from SysInternals.
+    exefile <- "whois.exe"
+    
+    # Only download and extract the utility if we don't already have it.
+    if (! file.exists(exefile) == TRUE) {
+        zipfile <- "WhoIs.zip"
+        if (! file.exists(zipfile) == TRUE) {
+            url <- "https://download.sysinternals.com/files/WhoIs.zip"
+            download.file(url, zipfile)
+        }
+        unzip(zipfile)
+    }
+}
+```
+
+Run the `whois` command with the domain `www.worldbank.org` as a test.
+
+```{r}
+# Try out the whois utility, removing any carriage-return (\r) characters.
+whois.data <- gsub(pattern = "\\r", replacement = "", 
+                   x = system("whois www.worldbank.org", intern = TRUE))
+
+# Take a quick look at the results.
+length(whois.data)
+head(whois.data, 10)
+```
+
+Read the data into a `data.frame`.
+
+```{r}
+# clean up the the whois data and read into a data.frame.
+
+# Use the vertical bar symbol (|) as the delimiter instead of the colon (:).
+whois.data <- gsub(pattern = ":[[:space:]]", replacement = "|", x = whois.data)
+
+# Remove lines which do not contain the delimiter.
+whois.data <- whois.data[grepl(x = whois.data, pattern = "\\|")]
+
+# Take a quick look at the results.
+length(whois.data)
+head(whois.data, 10)
+
+# Take a look at the last few lines.
+tail(whois.data, 10)
+
+# Remove the '>>>' and '<<<' strings from the last line.
+whois.data[length(whois.data)] <- gsub("[[:space:]]?[<>]{3}[[:space:]]?", "", 
+                                       x = whois.data[length(whois.data)])
+
+# Check the last line again.
+whois.data[length(whois.data)]
+
+# Read the file into a data.frame.
+whois.df <- read.table(text = whois.data, sep = "|", as.is = TRUE)
+names(whois.df) <- c("variable", "value")
+```
+
+Load the `knitr` package so that we can use the `kable()` function.
+
+```{r, message=FALSE}
+library(knitr)
+```
+
+Produce a formatted table from the `data.frame` using `kable()`.
+
+```{r, results='asis'}
+kable(whois.df)
+```

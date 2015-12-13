@@ -393,6 +393,17 @@ view_image <- function(image) {
     }
 }
 
+make_rtt_plot <- function(route) {
+    # Produce a line plot of mean rtt per route hop using base graphics.
+    
+    plot.new()
+    
+    plot(rownames(route), route$mean_rtt, 
+         xlab = "Route Hops", ylab = "Mean RTT (ms)", 
+         main="Mean RTT per Route Hop")
+    lines(rownames(route), route$mean_rtt)
+}
+
 print_route_table <- function(ipinfo) {
     # Print out a table of the route.
     
@@ -447,5 +458,9 @@ if (nrow(route) > 0) {
         if (map.pkg == "leaflet") make_leaflet(ipinfo)
         
         if (show.table == TRUE) print_route_table(ipinfo)
+        
+        # Plot the mean round-trip-times (rtt) for the hops in the route.
+        # Not yet fully incorporated in script, but you can run from R console.
+        #make_rtt_plot(route)
     }
 }

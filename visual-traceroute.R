@@ -178,6 +178,7 @@ trace_parser <- function(pattern) {
         route <- data.frame(unlist(addrs), sapply(rtt, mean), 
                             stringsAsFactors=FALSE)
         names(route) <- c("addr", "mean_rtt")
+        route <- route[complete.cases(route), ]
         
         if (nrow(route) > 0) {
             write.csv(route, files$route.csv, row.names = FALSE)

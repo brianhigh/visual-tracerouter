@@ -23,20 +23,20 @@ if (Sys.info()["sysname"] == "Windows") {
 }
 ```
 
-Run the `whois` command with the domain `www.worldbank.org` as a test.
+Run the `whois` command with the domain `who.int` as a test.
 
 
 ```r
 # Try out the whois utility, removing any carriage-return (\r) characters.
 whois.data <- gsub(pattern = "\\r", replacement = "", 
-                   x = system("whois www.worldbank.org", intern = TRUE))
+                   x = system("whois who.int", intern = TRUE))
 
 # Take a quick look at the results.
 length(whois.data)
 ```
 
 ```
-## [1] 66
+## [1] 42
 ```
 
 ```r
@@ -44,16 +44,16 @@ head(whois.data, 10)
 ```
 
 ```
-##  [1] ""                                               
-##  [2] "Whois v1.12 - Domain information lookup utility"
-##  [3] "Sysinternals - www.sysinternals.com"            
-##  [4] "Copyright (C) 2005-2014 Mark Russinovich"       
-##  [5] ""                                               
-##  [6] "Connecting to ORG.whois-servers.net..."         
-##  [7] ""                                               
-##  [8] "Domain ID: D5166969-LROR"                       
-##  [9] "WHOIS Server:"                                  
-## [10] "Referral URL: http://www.networksolutions.com"
+##  [1] "% IANA WHOIS server"                                      
+##  [2] "% for more information on IANA, visit http://www.iana.org"
+##  [3] "% This query returned 1 object"                           
+##  [4] ""                                                         
+##  [5] "domain:       WHO.INT"                                    
+##  [6] ""                                                         
+##  [7] "organisation: World Health Organization (WHO)"            
+##  [8] "address:      20, Avenue Appia"                           
+##  [9] "address:      Geneva 27"                                  
+## [10] "address:      Geneva Geneva CH-1211"
 ```
 
 Read the data into a `data.frame`.
@@ -73,7 +73,7 @@ length(whois.data)
 ```
 
 ```
-## [1] 44
+## [1] 32
 ```
 
 ```r
@@ -81,16 +81,16 @@ head(whois.data, 10)
 ```
 
 ```
-##  [1] "Domain ID|D5166969-LROR"                                                                  
-##  [2] "Referral URL|http://www.networksolutions.com"                                             
-##  [3] "Updated Date|2012-03-05T18:59:29Z"                                                        
-##  [4] "Creation Date|1991-08-14T04:00:00Z"                                                       
-##  [5] "Registry Expiry Date|2021-08-13T04:00:00Z"                                                
-##  [6] "Sponsoring Registrar|Network Solutions, LLC"                                              
-##  [7] "Sponsoring Registrar IANA ID|2"                                                           
-##  [8] "Domain Status|clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited"
-##  [9] "Registrant ID|15962757-NSI"                                                               
-## [10] "Registrant Name|World Bank"
+##  [1] "domain|      WHO.INT"                        
+##  [2] "organisation|World Health Organization (WHO)"
+##  [3] "address|     20, Avenue Appia"               
+##  [4] "address|     Geneva 27"                      
+##  [5] "address|     Geneva Geneva CH-1211"          
+##  [6] "address|     Switzerland"                    
+##  [7] "contact|     administrative"                 
+##  [8] "name|        WHO-HQ-NOC (at ITS/NTS)"        
+##  [9] "address|     20, Avenue Appia"               
+## [10] "address|     Geneva 27"
 ```
 
 ```r
@@ -99,33 +99,32 @@ tail(whois.data, 10)
 ```
 
 ```
-##  [1] "Tech Postal Code|20043"                                    
-##  [2] "Tech Country|US"                                           
-##  [3] "Tech Phone|+1.2024588503"                                  
-##  [4] "Tech Email|dnsadmin@worldbank.org"                         
-##  [5] "Name Server|DNS2.WORLDBANK.ORG"                            
-##  [6] "Name Server|DNS1.WORLDBANK.ORG"                            
-##  [7] "Name Server|DNS3.WORLDBANK.ORG"                            
-##  [8] "Name Server|DNS4.WORLDBANK.ORG"                            
-##  [9] "DNSSEC|unsigned"                                           
-## [10] ">>> Last update of WHOIS database|2015-12-11T14:59:02Z <<<"
+##  [1] "fax-no|      +41 22 791 4779"                
+##  [2] "e-mail|      hostmaster@who.int"             
+##  [3] "nserver|     EXT-DNS-2.CERN.CH 192.91.245.85"
+##  [4] "nserver|     NS1.WPRO.WHO.INT 123.176.64.11" 
+##  [5] "nserver|     WHQDNS1.WHO.INT 158.232.12.5"   
+##  [6] "nserver|     WHQDNS2.WHO.INT 158.232.12.6"   
+##  [7] "nserver|     WHQDNS3.WHO.INT 202.188.122.155"
+##  [8] "created|     1998-06-05"                     
+##  [9] "changed|     2015-10-05"                     
+## [10] "source|      IANA"
 ```
 
 ```r
-# Remove the '>>>' and '<<<' strings from the last line.
-whois.data[length(whois.data)] <- gsub("[[:space:]]?[<>]{3}[[:space:]]?", "", 
-                                       x = whois.data[length(whois.data)])
+# Remove any '>>>' and '<<<' strings, if present.
+whois.data <- gsub("[[:space:]]?[<>]{3}[[:space:]]?", "", whois.data)
 
 # Check the last line again.
 whois.data[length(whois.data)]
 ```
 
 ```
-## [1] "Last update of WHOIS database|2015-12-11T14:59:02Z"
+## [1] "source|      IANA"
 ```
 
 ```r
-# Read the file into a data.frame.
+# Read the file into a data.frame (df).
 whois.df <- read.table(text = whois.data, sep = "|", as.is = TRUE)
 names(whois.df) <- c("variable", "value")
 ```
@@ -146,49 +145,37 @@ kable(whois.df)
 
 
 
-variable                        value                                              
-------------------------------  ---------------------------------------------------
-Domain ID                       D5166969-LROR                                      
-Referral URL                    http://www.networksolutions.com                    
-Updated Date                    2012-03-05T18:59:29Z                               
-Creation Date                   1991-08-14T04:00:00Z                               
-Registry Expiry Date            2021-08-13T04:00:00Z                               
-Sponsoring Registrar            Network Solutions, LLC                             
-Sponsoring Registrar IANA ID    2                                                  
-Domain Status                   clientTransferProhibited https://www.icann.org/epp 
-Registrant ID                   15962757-NSI                                       
-Registrant Name                 World Bank                                         
-Registrant Organization         World Bank                                         
-Registrant Street               1818 H Street NW                                   
-Registrant City                 Washington                                         
-Registrant State/Province       DC                                                 
-Registrant Postal Code          20433                                              
-Registrant Country              US                                                 
-Registrant Phone                +1.2024588503                                      
-Registrant Email                dnsadmin@worldbank.org                             
-Admin ID                        43166795-NSI                                       
-Admin Name                      DNS Admin                                          
-Admin Organization              World Bank                                         
-Admin Street                    1818 H St N.W.                                     
-Admin City                      Washington                                         
-Admin State/Province            DC                                                 
-Admin Postal Code               20043                                              
-Admin Country                   US                                                 
-Admin Phone                     +1.2024588503                                      
-Admin Email                     dnsadmin@worldbank.org                             
-Tech ID                         43166795-NSI                                       
-Tech Name                       DNS Admin                                          
-Tech Organization               World Bank                                         
-Tech Street                     1818 H St N.W.                                     
-Tech City                       Washington                                         
-Tech State/Province             DC                                                 
-Tech Postal Code                20043                                              
-Tech Country                    US                                                 
-Tech Phone                      +1.2024588503                                      
-Tech Email                      dnsadmin@worldbank.org                             
-Name Server                     DNS2.WORLDBANK.ORG                                 
-Name Server                     DNS1.WORLDBANK.ORG                                 
-Name Server                     DNS3.WORLDBANK.ORG                                 
-Name Server                     DNS4.WORLDBANK.ORG                                 
-DNSSEC                          unsigned                                           
-Last update of WHOIS database   2015-12-11T14:59:02Z                               
+variable       value                           
+-------------  --------------------------------
+domain         WHO.INT                         
+organisation   World Health Organization (WHO) 
+address        20, Avenue Appia                
+address        Geneva 27                       
+address        Geneva Geneva CH-1211           
+address        Switzerland                     
+contact        administrative                  
+name           WHO-HQ-NOC (at ITS/NTS)         
+address        20, Avenue Appia                
+address        Geneva 27                       
+address        Geneva  CH-1211                 
+address        Switzerland                     
+phone          +41 22 791 2411                 
+fax-no         +41 22 791 4779                 
+e-mail         hostmaster@who.int              
+contact        technical                       
+name           WHO-HQ-NOC (at ITS/NTS)         
+address        20, Avenue Appia                
+address        Geneva 27                       
+address        Geneva  CH-1211                 
+address        Switzerland                     
+phone          +41 22 791 2411                 
+fax-no         +41 22 791 4779                 
+e-mail         hostmaster@who.int              
+nserver        EXT-DNS-2.CERN.CH 192.91.245.85 
+nserver        NS1.WPRO.WHO.INT 123.176.64.11  
+nserver        WHQDNS1.WHO.INT 158.232.12.5    
+nserver        WHQDNS2.WHO.INT 158.232.12.6    
+nserver        WHQDNS3.WHO.INT 202.188.122.155 
+created        1998-06-05                      
+changed        2015-10-05                      
+source         IANA                            

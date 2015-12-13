@@ -27,12 +27,12 @@ if (Sys.info()["sysname"] == "Windows") {
 }
 ```
 
-Run the `whois` command with the domain `www.worldbank.org` as a test.
+Run the `whois` command with the domain `who.int` as a test.
 
 ```{r}
 # Try out the whois utility, removing any carriage-return (\r) characters.
 whois.data <- gsub(pattern = "\\r", replacement = "", 
-                   x = system("whois www.worldbank.org", intern = TRUE))
+                   x = system("whois who.int", intern = TRUE))
 
 # Take a quick look at the results.
 length(whois.data)
@@ -57,14 +57,13 @@ head(whois.data, 10)
 # Take a look at the last few lines.
 tail(whois.data, 10)
 
-# Remove the '>>>' and '<<<' strings from the last line.
-whois.data[length(whois.data)] <- gsub("[[:space:]]?[<>]{3}[[:space:]]?", "", 
-                                       x = whois.data[length(whois.data)])
+# Remove any '>>>' and '<<<' strings, if present.
+whois.data <- gsub("[[:space:]]?[<>]{3}[[:space:]]?", "", whois.data)
 
 # Check the last line again.
 whois.data[length(whois.data)]
 
-# Read the file into a data.frame.
+# Read the file into a data.frame (df).
 whois.df <- read.table(text = whois.data, sep = "|", as.is = TRUE)
 names(whois.df) <- c("variable", "value")
 ```

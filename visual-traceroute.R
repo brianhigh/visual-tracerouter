@@ -418,11 +418,18 @@ print_route_table <- function(ipinfo) {
 # Main Routine
 # ------------
 
+# Clean up addr if it is actually a url instead of a domain name.
+addr <- gsub(pattern = "^(?:[a-zA-Z]*:\\/\\/)?([^\\/:]+).*", 
+             replacement = "\\1", addr)
+
+# Create a data frame of files to use for input and output.
 files <- create_folders_and_filenames(gsub("\\.", "_", addr), 
                                       data.dir, images.dir)
 
+# Send message to user.
 cat(paste(c("\n", "Tracing route to:", addr, "...", "\n")))
 
+# Get route.
 if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
     route <- read.csv(files$route.csv, stringsAsFactors=FALSE)
 } else {
@@ -432,6 +439,7 @@ if (use.cache == TRUE & file.exists(files$route.csv) == TRUE) {
 
 if (nrow(route) > 0) {
     
+    # Get geocoded route.
     if (use.cache == TRUE & file.exists(files$ipinfo.csv) == TRUE) {
         ipinfo <- read.csv(files$ipinfo.csv, stringsAsFactors=FALSE)
     } else {
@@ -440,6 +448,7 @@ if (nrow(route) > 0) {
         ipinfo <- get_ipinfo(route)
     }
     
+    # Deliver output maps: and tables.
     if (nrow(ipinfo) > 0) {    
         if (map.pkg == "ggmap") {
             if (use.cache == TRUE & file.exists(files$ggmap.png) == TRUE) {

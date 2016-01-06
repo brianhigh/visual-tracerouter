@@ -1,0 +1,10 @@
+"ip","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","mean_rtt"
+"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"209.124.181.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"64.57.28.53","US","United States","MI","Michigan","Ann Arbor","48104","America/Detroit",42.2734,-83.7133,"505",0
+"198.71.45.24","US","United States","MI","Michigan","Ann Arbor","48104","America/Detroit",42.2734,-83.7133,"505",18.886
+"198.71.45.18","US","United States","MI","Michigan","Ann Arbor","48104","America/Detroit",42.2734,-83.7133,"505",34.893
+"198.71.45.14","US","United States","MI","Michigan","Ann Arbor","48104","America/Detroit",42.2734,-83.7133,"505",46.863
+"192.91.246.126","CH","Switzerland","GE","Geneva","Geneva","1205","Europe/Zurich",46.1956,6.1481,"0",182.871
+"192.65.196.38","CH","Switzerland","GE","Geneva","Geneva","1205","Europe/Zurich",46.1956,6.1481,"0",166.646333333333
+"188.184.37.205","CH","Switzerland","GE","Geneva","Meyrin","1217","Europe/Zurich",46.2324,6.0502,"0",164.322

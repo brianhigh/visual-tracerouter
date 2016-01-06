@@ -2,10 +2,10 @@
 # title:  visual-tracerouter
 # descr:  Plot a map of the route of internet traffic to a remote host
 # author: Brian High
-# date:   11 Dec. 2015
+# date:   06 Jan. 2016
 # --------------------------------------------------------------------------
 #
-# Copyright (C) 2015 Brian High (https://github.com/brianhigh)
+# Copyright (C) 2016 Brian High (https://github.com/brianhigh)
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -294,6 +294,10 @@ plot_ggmap <- function(ipinfo) {
     # Only load these packages if this function is called.
     load_packages(c("ggmap"))
     
+    # Set .all_aesthetics to avoid error: "object '.all_aesthetics' not found"
+    .all_aesthetics <- unlist(getAnywhere(.all_aesthetics)[1:42])
+    
+    # Create the plot
     p <- qmplot(longitude, latitude, data = ipinfo, source="stamen", 
                 maptype = "toner-lite", mapcolor="bw", color = I("red"), 
                 geom = "segment", xend=next_longitude, yend=next_latitude)

@@ -82,7 +82,7 @@ route.summary <- summarySE(routes, measurevar="rtt", groupvars=c("host", "hop", 
 
 # Use 95% confidence interval for error bars.
 g <- ggplot(route.summary, aes(x=hop, y=rtt, colour=host)) + 
-    geom_errorbar(aes(ymin=rtt-ci, ymax=rtt+ci), width=.1, size=2) +
+    geom_errorbar(aes(ymin=rtt-ci, ymax=rtt+ci), colour="black", width=.1) +
     geom_line(aes(group=host), size=2) +
     theme_grey(base_size = 20) +
     xlab("Network hop") + ylab("Round-trip time (ms)") +

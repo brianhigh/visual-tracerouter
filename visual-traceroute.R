@@ -78,6 +78,9 @@ use.icmp <- FALSE
 data.dir <- "data"
 images.dir <- "images"
 
+# Set .all_aesthetics to avoid error: "object '.all_aesthetics' not found"
+.all_aesthetics <- unlist(getAnywhere(.all_aesthetics)[1:42])
+
 # --------------------------
 # Parse command-line options
 # --------------------------
@@ -293,9 +296,6 @@ plot_ggmap <- function(ipinfo) {
     
     # Only load these packages if this function is called.
     load_packages(c("ggmap"))
-    
-    # Set .all_aesthetics to avoid error: "object '.all_aesthetics' not found"
-    .all_aesthetics <- unlist(getAnywhere(.all_aesthetics)[1:42])
     
     # Create the plot
     p <- qmplot(longitude, latitude, data = ipinfo, source="stamen", 

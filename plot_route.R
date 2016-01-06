@@ -6,12 +6,12 @@
 #          "data/udrive_uw_edu/route_4225roo_windows.txt"
 #
 #  RO1-Server$ sudo traceroute -I \
-#          -n udrive.uw.edu 2>&1 | tr -s " " "|" | tail -n +2 > \
-#          "data/udrive_uw_edu/route_4225roo_linux.txt"
+#          -n udrive.uw.edu 2>&1 | sed 's/\*/* ms/g' | tr -s " " "|" | \
+#          tail -n +2 > "data/udrive_uw_edu/route_4225roo_linux.txt"
 #          
 #  MHSF-Mac$ traceroute -I \
-#          -n udrive.uw.edu 2>&1 | tr -s " " "|" | tail -n +3 > \
-#          "data/udrive_uw_edu/route_mhsf_osx.txt"
+#          -n udrive.uw.edu 2>&1 | sed 's/\*/* ms/g' | tr -s " " "|" | \
+#          tail -n +3 > "data/udrive_uw_edu/route_mhsf_osx.txt"
 
 # Function to install packages as needed then load them into R.
 load_packages <- function(pkgs) {
@@ -41,7 +41,7 @@ import.route <- function(fname, troute.type, host) {
         route <- route[,c(1, 2, 4, 6, 8)]
         route <- route[complete.cases(route),]
         names(route) <- c("hop", "query.1", "query.2", "query.3", "ip.addr")
-        route[,2:4] <- as.numeric(gsub("<", "", as.matrix(route[2:4])))
+        route[,2:4] <- as.numeric(gsub("[<*]", "", as.matrix(route[2:4])))
     } else {
         route <- read.table(fname, sep="|", header=F)
         route <- route[,c(2, 3, 4, 6, 8)]
@@ -65,9 +65,10 @@ load_packages(c("reshape", "Rmisc", "ggplot2", "data.table"))
 # Define information about the data files to be used as route data.
 files <- c("data/udrive_uw_edu/route_4225roo_windows.txt",
            "data/udrive_uw_edu/route_4225roo_linux.txt", 
-           "data/udrive_uw_edu/route_mhsf_osx.txt")
-types <- c("tracert", "traceroute", "traceroute")
-hosts <- c("RO1-PC", "RO1-Server", "MHSF-Mac")
+           "data/udrive_uw_edu/route_mhsf_osx.txt",
+           "data/www_cubagob_cu/route.txt")
+types <- c("tracert", "traceroute", "traceroute", "tracert")
+hosts <- c("RO1-PC", "RO1-Server", "www.gov.za", "www.cubagob.cu")
 route.info <- cbind(file=files, type=types, host=hosts)
 
 # Process the routes using the route info.

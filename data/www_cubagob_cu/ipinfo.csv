@@ -1,15 +1,13 @@
 "ip","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","mean_rtt"
-"128.95.21.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
-"205.175.118.2","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
-"209.124.188.132","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1.33333333333333
-"198.104.202.6","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",1.33333333333333
-"198.104.202.5","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",1.66666666666667
-"64.86.123.41","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",1.33333333333333
-"64.86.124.25","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",2
-"64.86.124.30","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",70.6666666666667
-"66.198.96.45","CA","Canada","QC","Quebec","Montreal","H3C","America/Toronto",45.498,-73.5472,"0",70.3333333333333
-"66.198.96.34","CA","Canada","QC","Quebec","Montreal","H3C","America/Toronto",45.498,-73.5472,"0",261.666666666667
-"200.0.16.85","CU","Cuba","","","","","America/Havana",21.5,-80,"0",213.333333333333
-"200.0.16.196","CU","Cuba","","","","","America/Havana",21.5,-80,"0",210
-"200.0.16.182","CU","Cuba","","","","","America/Havana",21.5,-80,"0",220.666666666667
-"169.158.128.54","CU","Cuba","08","Provincia de Ciego de Avila","Habana","","America/Havana",22.2514,-78.9131,"0",226.666666666667
+"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"209.124.188.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"198.104.202.5","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",3.939
+"64.86.123.41","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",1.313
+"64.86.123.2","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",2.626
+"64.86.124.30","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",68.023
+"66.198.96.45","CA","Canada","QC","Quebec","Montreal","H3C","America/Toronto",45.498,-73.5472,"0",68.023
+"66.198.96.34","CA","Canada","QC","Quebec","Montreal","H3C","America/Toronto",45.498,-73.5472,"0",220.016
+"200.0.16.85","CU","Cuba","","","","","America/Havana",21.5,-80,"0",184.008
+"200.0.16.196","CU","Cuba","","","","","America/Havana",21.5,-80,"0",180
+"200.0.16.182","CU","Cuba","","","","","America/Havana",21.5,-80,"0",183.981333333333
+"169.158.128.54","CU","Cuba","08","Provincia de Ciego de Avila","Habana","","America/Havana",22.2514,-78.9131,"0",183.968

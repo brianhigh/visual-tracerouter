@@ -1,15 +1,14 @@
 "ip","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","mean_rtt"
-"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
-"205.175.119.2","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
-"209.124.188.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",2.66666666666667
-"198.104.202.5","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",1.33333333333333
-"129.250.5.46","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",1
-"129.250.3.43","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",52.3333333333333
-"129.250.2.163","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",41
-"129.250.2.138","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",76
-"129.250.3.84","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",65
-"129.250.3.21","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",182.666666666667
-"129.250.3.94","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",166
-"212.119.15.18","GB","United Kingdom","ENG","England","London","EC4N","Europe/London",51.5144,-0.0941,"0",191.333333333333
-"193.151.28.17","RO","Romania","","","","","Europe/Bucharest",46,25,"0",191.333333333333
-"85.120.75.2","RO","Romania","","","","","Europe/Bucharest",46,25,"0",191
+"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"209.124.188.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",0
+"198.104.202.5","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",0
+"129.250.5.46","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",0
+"129.250.3.43","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",52.013
+"129.250.2.163","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",48
+"129.250.2.138","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",67.992
+"129.250.3.84","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",78.6593333333333
+"129.250.3.21","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",163.992
+"129.250.3.94","US","United States","CO","Colorado","Englewood","80111","America/Denver",39.6237,-104.8738,"751",181.334333333333
+"212.119.15.18","GB","United Kingdom","ENG","England","London","EC4N","Europe/London",51.5144,-0.0941,"0",188.015666666667
+"193.151.28.17","RO","Romania","","","","","Europe/Bucharest",46,25,"0",192.000666666667
+"85.120.75.2","RO","Romania","","","","","Europe/Bucharest",46,25,"0",190.681

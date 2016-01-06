@@ -180,6 +180,15 @@ trace_parser <- function(pattern) {
         names(route) <- c("addr", "mean_rtt")
         route <- route[complete.cases(route), ]
         
+        # Store the individual rtt values, or NA if missing.
+        m <- max(sapply(rtt, length))
+        route$rtt.1 <- mapply(function(x, y, z) { 
+            length(x) <- z; x[y] }, rtt, 1, m)
+        route$rtt.2 <- mapply(function(x, y, z) { 
+            length(x) <- z; x[y] }, rtt, 2, m)
+        route$rtt.3 <- mapply(function(x, y, z) { 
+            length(x) <- z; x[y] }, rtt, 3, m)
+        
         if (nrow(route) > 0) {
             write.csv(route, files$route.csv, row.names = FALSE)
         }

@@ -1,0 +1,11 @@
+"ip","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","mean_rtt"
+"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"205.175.119.2","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"209.124.188.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"206.81.80.84","US","United States","WA","Washington","Seattle","98101","America/Los_Angeles",47.6103,-122.3341,"819",2.33333333333333
+"206.81.80.13","US","United States","WA","Washington","Seattle","98101","America/Los_Angeles",47.6103,-122.3341,"819",1
+"63.218.112.218","US","United States","VA","Virginia","Herndon","20170","America/New_York",38.9841,-77.3827,"511",99.6666666666667
+"63.217.112.22","US","United States","VA","Virginia","Herndon","20170","America/New_York",38.9841,-77.3827,"511",104.666666666667
+"63.245.5.190","US","United States","FL","Florida","Miami","33162","America/New_York",25.9274,-80.1801,"528",103.666666666667
+"63.245.70.98","US","United States","FL","Florida","Miami","33162","America/New_York",25.9274,-80.1801,"528",147.333333333333
+"162.246.104.182","BB","Barbados","08","Saint Michael","Warrens","","America/Barbados",13.15,-59.6,"0",146

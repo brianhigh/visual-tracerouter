@@ -1,0 +1,26 @@
+"ip","country_code","country_name","region_code","region_name","city","zip_code","time_zone","latitude","longitude","metro_code","mean_rtt"
+"128.95.230.102","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"205.175.119.2","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"209.124.188.134","US","United States","WA","Washington","Seattle","98105","America/Los_Angeles",47.6606,-122.2919,"819",1
+"4.53.146.142","US","United States","","","","","",38,-97,"0",1
+"4.53.146.141","US","United States","","","","","",38,-97,"0",1
+"4.69.147.171","US","United States","","","","","",38,-97,"0",5.66666666666667
+"207.45.206.9","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",1
+"64.86.124.25","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",1.33333333333333
+"64.86.124.22","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",310.666666666667
+"64.86.79.2","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",310
+"216.6.81.28","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",311
+"66.198.111.125","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",298.333333333333
+"216.6.57.1","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",309
+"66.198.70.174","US","United States","DE","Delaware","Wilmington","19808","America/New_York",39.7351,-75.6684,"504",307
+"80.231.130.129","","","","","","","Europe/Vaduz",47,8,"0",317
+"80.231.139.41","","","","","","","Europe/Vaduz",47,8,"0",317
+"80.231.139.66","","","","","","","Europe/Vaduz",47,8,"0",308
+"80.231.91.113","","","","","","","Europe/Vaduz",47,8,"0",318.666666666667
+"80.231.91.66","","","","","","","Europe/Vaduz",47,8,"0",322.333333333333
+"80.231.159.29","","","","","","","Europe/Vaduz",47,8,"0",322
+"80.231.159.86","","","","","","","Europe/Vaduz",47,8,"0",312
+"41.206.164.254","ZA","South Africa","","","","","Africa/Johannesburg",-29,24,"0",318
+"41.206.179.9","ZA","South Africa","","","","","Africa/Johannesburg",-29,24,"0",315.333333333333
+"41.206.179.14","ZA","South Africa","","","","","Africa/Johannesburg",-29,24,"0",307
+"41.161.79.90","ZA","South Africa","","","","","Africa/Johannesburg",-29,24,"0",309

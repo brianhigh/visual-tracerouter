@@ -9,17 +9,19 @@ tool by default. Other popular operating systems like OSX and Linux come with
 ```r
 if (Sys.info()["sysname"] == "Windows") {
     # Get the whois.exe file for Windows from SysInternals.
-    exefile <- "whois.exe"
+    exefile <- ".\\whois.exe"   # This syntax will work in DOS and Bash.
     
     # Only download and extract the utility if we don't already have it.
     if (! file.exists(exefile) == TRUE) {
         zipfile <- "WhoIs.zip"
         if (! file.exists(zipfile) == TRUE) {
-            url <- "https://download.sysinternals.com/files/WhoIs.zip"
+            url <- "http://download.sysinternals.com/files/WhoIs.zip"
             download.file(url, zipfile)
         }
         unzip(zipfile)
     }
+} else {
+    exefile <- "whois"
 }
 ```
 
@@ -29,14 +31,14 @@ Run the `whois` command with the domain `who.int` as a test.
 ```r
 # Try out the whois utility, removing any carriage-return (\r) characters.
 whois.data <- gsub(pattern = "\\r", replacement = "", 
-                   x = system("whois who.int", intern = TRUE))
+                   x = system(paste(exefile, "who.int"), intern = TRUE))
 
 # Take a quick look at the results.
 length(whois.data)
 ```
 
 ```
-## [1] 42
+## [1] 46
 ```
 
 ```r
@@ -44,16 +46,16 @@ head(whois.data, 10)
 ```
 
 ```
-##  [1] "% IANA WHOIS server"                                      
-##  [2] "% for more information on IANA, visit http://www.iana.org"
-##  [3] "% This query returned 1 object"                           
-##  [4] ""                                                         
-##  [5] "domain:       WHO.INT"                                    
-##  [6] ""                                                         
-##  [7] "organisation: World Health Organization (WHO)"            
-##  [8] "address:      20, Avenue Appia"                           
-##  [9] "address:      Geneva 27"                                  
-## [10] "address:      Geneva Geneva CH-1211"
+##  [1] ""                                               
+##  [2] "Whois v1.12 - Domain information lookup utility"
+##  [3] "Sysinternals - www.sysinternals.com"            
+##  [4] "Copyright (C) 2005-2014 Mark Russinovich"       
+##  [5] ""                                               
+##  [6] "Connecting to INT.whois-servers.net..."         
+##  [7] ""                                               
+##  [8] "domain:       WHO.INT"                          
+##  [9] ""                                               
+## [10] "organisation: World Health Organization (WHO)"
 ```
 
 Read the data into a `data.frame`.
@@ -145,37 +147,37 @@ kable(whois.df)
 
 
 
-variable       value                           
--------------  --------------------------------
-domain         WHO.INT                         
-organisation   World Health Organization (WHO) 
-address        20, Avenue Appia                
-address        Geneva 27                       
-address        Geneva Geneva CH-1211           
-address        Switzerland                     
-contact        administrative                  
-name           WHO-HQ-NOC (at ITS/NTS)         
-address        20, Avenue Appia                
-address        Geneva 27                       
-address        Geneva  CH-1211                 
-address        Switzerland                     
-phone          +41 22 791 2411                 
-fax-no         +41 22 791 4779                 
-e-mail         hostmaster@who.int              
-contact        technical                       
-name           WHO-HQ-NOC (at ITS/NTS)         
-address        20, Avenue Appia                
-address        Geneva 27                       
-address        Geneva  CH-1211                 
-address        Switzerland                     
-phone          +41 22 791 2411                 
-fax-no         +41 22 791 4779                 
-e-mail         hostmaster@who.int              
-nserver        EXT-DNS-2.CERN.CH 192.91.245.85 
-nserver        NS1.WPRO.WHO.INT 123.176.64.11  
-nserver        WHQDNS1.WHO.INT 158.232.12.5    
-nserver        WHQDNS2.WHO.INT 158.232.12.6    
-nserver        WHQDNS3.WHO.INT 202.188.122.155 
-created        1998-06-05                      
-changed        2015-10-05                      
-source         IANA                            
+variable       value                                
+-------------  -------------------------------------
+domain               WHO.INT                        
+organisation   World Health Organization (WHO)      
+address             20, Avenue Appia                
+address             Geneva 27                       
+address             Geneva Geneva CH-1211           
+address             Switzerland                     
+contact             administrative                  
+name                   WHO-HQ-NOC (at ITS/NTS)      
+address             20, Avenue Appia                
+address             Geneva 27                       
+address             Geneva  CH-1211                 
+address             Switzerland                     
+phone                 +41 22 791 2411               
+fax-no               +41 22 791 4779                
+e-mail               hostmaster@who.int             
+contact             technical                       
+name                   WHO-HQ-NOC (at ITS/NTS)      
+address             20, Avenue Appia                
+address             Geneva 27                       
+address             Geneva  CH-1211                 
+address             Switzerland                     
+phone                 +41 22 791 2411               
+fax-no               +41 22 791 4779                
+e-mail               hostmaster@who.int             
+nserver             EXT-DNS-2.CERN.CH 192.91.245.85 
+nserver             NS1.WPRO.WHO.INT 123.176.64.11  
+nserver             WHQDNS1.WHO.INT 158.232.12.5    
+nserver             WHQDNS2.WHO.INT 158.232.12.6    
+nserver             WHQDNS3.WHO.INT 202.188.122.155 
+created             1998-06-05                      
+changed             2015-10-05                      
+source               IANA                           

@@ -13,17 +13,19 @@ tool by default. Other popular operating systems like OSX and Linux come with
 ```{r}
 if (Sys.info()["sysname"] == "Windows") {
     # Get the whois.exe file for Windows from SysInternals.
-    exefile <- "whois.exe"
+    exefile <- ".\\whois.exe"   # This syntax will work in DOS and Bash.
     
     # Only download and extract the utility if we don't already have it.
     if (! file.exists(exefile) == TRUE) {
         zipfile <- "WhoIs.zip"
         if (! file.exists(zipfile) == TRUE) {
-            url <- "https://download.sysinternals.com/files/WhoIs.zip"
+            url <- "http://download.sysinternals.com/files/WhoIs.zip"
             download.file(url, zipfile)
         }
         unzip(zipfile)
     }
+} else {
+    exefile <- "whois"
 }
 ```
 
@@ -32,7 +34,7 @@ Run the `whois` command with the domain `who.int` as a test.
 ```{r}
 # Try out the whois utility, removing any carriage-return (\r) characters.
 whois.data <- gsub(pattern = "\\r", replacement = "", 
-                   x = system("whois who.int", intern = TRUE))
+                   x = system(paste(exefile, "who.int"), intern = TRUE))
 
 # Take a quick look at the results.
 length(whois.data)

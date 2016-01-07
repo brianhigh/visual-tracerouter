@@ -21,6 +21,9 @@ if (Sys.info()["sysname"] == "Windows") {
         if (! file.exists(zipfile) == TRUE) {
             url <- "http://download.sysinternals.com/files/WhoIs.zip"
             download.file(url, zipfile)
+            
+            # Run this utility once (first time) to agree to the EULA.
+            system(paste(exefile, "--help"), intern = FALSE)
         }
         unzip(zipfile)
     }

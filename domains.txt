@@ -1,4 +1,4 @@
-moosylvania.com
+www.gov.bm
 nsa.gov
 opm.gov.jm
 redcross.org
@@ -9,6 +9,7 @@ www.cubagob.cu
 www.gobiernoenlinea.ve
 www.gov.bb
 www.gov.za
+www.gov.ls
 www.moldova.md
 www.nasa.gov
 www.nih.gov
@@ -20,8 +21,11 @@ r-pc.jp
 www.glbb.jp
 who.int
 www.who.int
+www.esa.int
 www.worldbank.org
 www.un.org
 wto.org
 www.nato.int
 www.tuvaluislands.com
+www.ju.edu.sa
+moosylvania.com

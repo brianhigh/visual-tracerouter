@@ -21,7 +21,7 @@ r-pc.jp
 www.glbb.jp
 who.int
 www.who.int
-www.esa.int
+esa.int
 www.worldbank.org
 www.un.org
 wto.org

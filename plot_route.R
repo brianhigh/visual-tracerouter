@@ -2,7 +2,7 @@
 # title:  plot_route.R
 # descr:  Plot hops to reach hosts by round-trip time (rtt) with error bars.
 # author: Brian High
-# date:   06 Jan. 2016
+# date:   07 Jan. 2016
 # --------------------------------------------------------------------------
 #
 # Note: Only those hops with rtt data will be plotted; others are ignored.
@@ -73,7 +73,8 @@ routes <- rbindlist(lapply(1:length(files),
                         function(n) import.route(files[n], hosts[n])))
 
 # Combine all route data into a singe data table.
-route.summary <- summarySE(routes, measurevar="rtt", groupvars=c("host", "hop", "mean_rtt"))
+route.summary <- summarySE(routes, measurevar="rtt", 
+                           groupvars=c("host", "hop", "mean_rtt"))
 
 # Make a basic line and point graph with error bars.
 

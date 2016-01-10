@@ -79,7 +79,9 @@ data.dir <- "data"
 images.dir <- "images"
 
 # Set .all_aesthetics to avoid error: "object '.all_aesthetics' not found"
-.all_aesthetics <- suppressWarnings(unlist(getAnywhere(.all_aesthetics)[1:42]))
+# See: http://stackoverflow.com/questions/34688670
+# And: https://github.com/dkahle/ggmap/issues/81
+.all_aesthetics <- get(".all_aesthetics", envir = asNamespace("ggplot2"))
 
 # --------------------------
 # Parse command-line options
@@ -301,24 +303,6 @@ plot_ggmap <- function(ipinfo) {
   p <- qmplot(x = longitude, y = latitude, data = ipinfo, source = "stamen", 
               maptype = "toner-lite", mapcolor = "bw", color = I("red"), 
               xend = next_longitude, yend = next_latitude, geom = "segment")
-  
-  # BUG: If you see these errors, run the script a second time from R.
-  #   Error: geom_segment requires the following missing aesthetics: x, y
-  #   Error in eval(expr, envir, enclos) : object 'next_longitude' not found
-  #
-  # > source("./visual-traceroute.R")
-  # 
-  # Tracing route to: www.gov.za ... 
-  # Using zoom = 3...
-  # Error in eval(expr, envir, enclos) : object 'next_longitude' not found
-  #
-  # > source("./visual-traceroute.R")
-  #
-  # Tracing route to: www.gov.za ... 
-  # Using zoom = 3...
-  # Saving 6.99 x 7 in image
-  #
-  # Note: Until this bug is fixed, map.pkg='ggmap' will not work from Rscript.
   
   # Show plot in separate graphics device window.
   if (new.win == TRUE) x11()

@@ -98,21 +98,12 @@ if(length(args) > 0) {
 # Functions
 # ---------
 
-load_packages <- function(pkgs) {
-  # Install packages (if necessary) and load them into memory.
-  
-  for (pkg in pkgs) {
-    if (! suppressWarnings(suppressPackageStartupMessages(require(
-      pkg, character.only=TRUE, quietly=TRUE))) ) {
-      install.packages(pkg, repos="http://cran.fhcrc.org", 
-                       dependencies=TRUE)
-      if (! suppressWarnings(suppressPackageStartupMessages(require(
-        pkg, character.only=TRUE, quietly=TRUE))) ) {
-        stop(paste0(c("Can't load package: ", pkg, "!"), 
-                    collapse = ""))
-      }
-    }
-  }
+load_packages <- function(pkgs, repos = "http://cran.r-project.org") {
+    # Install packages (if necessary) and load them into memory.
+    result <- sapply(pkgs, function(pkg) { 
+        if (!suppressWarnings(require(pkg, character.only = TRUE))) {
+            install.packages(pkg, quiet = TRUE, repos = repos)
+            library(pkg, character.only = TRUE)}})
 }
 
 create_folders_and_filenames <- function(file.addr, data.dir, images.dir) {
